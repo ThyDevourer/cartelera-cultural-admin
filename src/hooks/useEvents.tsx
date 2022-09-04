@@ -1,4 +1,4 @@
-import { useState, useCallback, ChangeEvent, useEffect } from 'react'
+import { useState, useCallback, ChangeEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { crud } from '../services/crud.service'
 import { useSessionStore } from './useSessionStore'
@@ -39,10 +39,11 @@ const useEvents = () => {
       name: 'Link para comprar boletos?',
       field: 'ticketLink',
       type: 'select',
+      placeholder: 'Selecciona una opción',
       options: [
+        { name: 'Todos', value: 'all' },
         { name: 'Si', value: true },
-        { name: 'No', value: false },
-        { name: 'Todos', value: 'all' }
+        { name: 'No', value: false }
       ]
     },
     {
@@ -120,10 +121,6 @@ const useEvents = () => {
 
   const rows = data?.data ?? []
   const count = data?.meta.count ?? { total: 0, filtered: 0 }
-
-  useEffect(() => {
-    console.log(filters)
-  }, [filters])
 
   const handleFilterChange = useCallback(debounce((event: ChangeEvent<any>, type: string) => {
     const value = event.target.value
