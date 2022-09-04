@@ -1,3 +1,5 @@
+import shallow from 'zustand/shallow'
+import { useToast } from '@chakra-ui/react'
 import { useState, useCallback, ChangeEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { crud } from '../services/crud.service'
@@ -6,8 +8,12 @@ import { IEvent, EventFilters, Response, FilterShape } from '../types/interfaces
 import { debounce } from 'lodash'
 
 const useEvents = () => {
+  const toast = useToast()
   const client = useQueryClient()
-  const token = useSessionStore(state => state.user.token)
+  const { token, logout } = useSessionStore(
+    state => ({ token: state.user.token, logout: state.logout }),
+    shallow
+  )
   const [filters, setFilters] = useState<EventFilters>({
     title: '',
     description: '',
@@ -96,7 +102,6 @@ const useEvents = () => {
     onMutate: async (event: IEvent) => {
       await client.cancelQueries(['events', filters])
       const prevEvents = client.getQueryData<Response<IEvent[]>>(['events', filters])
-      console.log(prevEvents)
       if (prevEvents) {
         client.setQueryData(['events', filters], {
           data: [...prevEvents.data, event],
@@ -111,8 +116,15 @@ const useEvents = () => {
       }
       return { prevEvents }
     },
-    onError: (err, _, context: any) => {
-      console.log(err)
+    onError: (err: any, _, context: any) => {
+      toast({
+        title: 'Error',
+        description: err.message,
+        status: 'error',
+        duration: 5000,
+        isClosable: true
+      })
+      logout()
       if (context?.prevEvents) {
         client.setQueryData<IEvent[]>(['events', filters], context.prevEvents)
       }
