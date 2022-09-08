@@ -34,7 +34,7 @@
     "react-hook-form": "^7.34.0",
     "react-icons": "^4.4.0",
     "react-router-dom": "^6.3.0",
-    "zod": "^3.18.0",
+    "superstruct": "^0.16.0",
     "zustand": "^4.0.0"
   },
   "devDependencies": {
