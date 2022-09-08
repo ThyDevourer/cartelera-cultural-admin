@@ -6,6 +6,7 @@ import { crud } from '../services/crud.service'
 import { useSessionStore } from './useSessionStore'
 import { IEvent, EventFilters, Response, FilterShape } from '../types/interfaces'
 import { debounce } from 'lodash'
+import { APIError } from '../utils/error'
 
 const useEvents = () => {
   const toast = useToast()
@@ -76,7 +77,7 @@ const useEvents = () => {
   const [limit, setLimit] = useState(20)
   const [skip, setSkip] = useState(0)
   const { status, data } = useQuery(['events', filters], async () => {
-    const res = await crud<IEvent[]>({
+    const res = await crud<{}, IEvent[]>({
       method: 'GET',
       endpoint: 'events',
       meta: {
@@ -87,9 +88,16 @@ const useEvents = () => {
     })
     return res
   })
+  const { data: totalData } = useQuery(['events', 'total'], async () => {
+    const res = await crud<{}, number>({
+      method: 'GET',
+      endpoint: 'events/count'
+    })
+    return res
+  })
   const addEvent = useMutation({
     mutationFn: async (event: IEvent) => {
-      const res = await crud<IEvent>({
+      const res = await crud<IEvent, IEvent>({
         method: 'POST',
         endpoint: 'events',
         payload: event,
@@ -101,22 +109,20 @@ const useEvents = () => {
     },
     onMutate: async (event: IEvent) => {
       await client.cancelQueries(['events', filters])
+      await client.cancelQueries(['events', 'total'])
       const prevEvents = client.getQueryData<Response<IEvent[]>>(['events', filters])
       if (prevEvents) {
         client.setQueryData(['events', filters], {
           data: [...prevEvents.data, event],
           meta: {
             ...prevEvents.meta,
-            count: {
-              total: prevEvents.meta.count.total + 1,
-              filtered: prevEvents.meta.count.filtered + 1
-            }
+            count: count + 1
           }
         })
       }
       return { prevEvents }
     },
-    onError: (err: any, _, context: any) => {
+    onError: (err: Error, _, context: any) => {
       toast({
         title: 'Error',
         description: err.message,
@@ -124,15 +130,34 @@ const useEvents = () => {
         duration: 5000,
         isClosable: true
       })
-      logout()
+      if (err instanceof APIError) {
+        if (err.status === 401) {
+          logout()
+        }
+      }
       if (context?.prevEvents) {
         client.setQueryData<IEvent[]>(['events', filters], context.prevEvents)
       }
     }
   })
 
+  const addEventSubmit = async (payload: Omit<IEvent, 'flyer'>, image: FileList) => {
+    const formData = new FormData()
+    formData.append('image', image[0])
+    const { data: imgUrl } = await crud<FormData, string>({
+      method: 'POST',
+      endpoint: 'upload/image',
+      payload: formData,
+      meta: {
+        token
+      }
+    })
+    console.log(imgUrl)
+    addEvent.mutate({ ...payload, flyer: imgUrl })
+  }
+
   const rows = data?.data ?? []
-  const count = data?.meta.count ?? { total: 0, filtered: 0 }
+  const count = totalData?.data ?? 0
 
   const handleFilterChange = useCallback(debounce((event: ChangeEvent<any>, type: string) => {
     const value = event.target.value
@@ -173,7 +198,8 @@ const useEvents = () => {
     addEvent,
     count,
     handleFilterChange,
-    filterInputs
+    filterInputs,
+    addEventSubmit
   }
 }
 

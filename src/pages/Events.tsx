@@ -48,7 +48,8 @@ const Events = () => {
     skip,
     setSkip,
     addEvent,
-    count
+    count,
+    addEventSubmit
   } = useEvents()
   const [modalContent, setModalContent] = useState<ReactElement | null>(null)
   const [modalTitle, setModalTitle] = useState('')
@@ -122,7 +123,7 @@ const Events = () => {
 
   const tools: Tool[] = [
     {
-      title: String(count.total),
+      title: String(count),
       subtitle: 'Total de eventos'
     },
     {
@@ -133,7 +134,7 @@ const Events = () => {
         setModalContent(
           <AddEventForm
             onClose={onEditClose}
-            onSubmit={(payload) => addEvent.mutate(payload)}
+            onSubmit={addEventSubmit}
           />
         )
         onEditOpen()
