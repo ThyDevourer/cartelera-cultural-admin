@@ -1,9 +1,6 @@
 import { useState, useRef, ReactElement } from 'react'
 import {
   Flex,
-  Grid,
-  GridItem,
-  Text,
   Heading,
   Portal,
   useDisclosure,
@@ -19,14 +16,17 @@ import {
   AlertDialogContent,
   AlertDialogHeader,
   AlertDialogBody,
-  AlertDialogFooter
+  AlertDialogFooter,
+  Tag,
+  TagLabel,
+  Box
 } from '@chakra-ui/react'
 import {
   ColumnDef,
   createColumnHelper
 } from '@tanstack/react-table'
 import dayjs from 'dayjs'
-import { FaFilter } from 'react-icons/fa'
+import { FaPlus } from 'react-icons/fa'
 import useEvents from '../hooks/useEvents'
 import { IEvent, Tool } from '../types/interfaces'
 import Table from '../components/Table/Table'
@@ -40,7 +40,6 @@ const Events = () => {
   const {
     status,
     rows,
-    filters,
     handleFilterChange,
     filterInputs,
     limit,
@@ -121,73 +120,61 @@ const Events = () => {
 
   const cancelRef = useRef(null)
 
-  const tools: Tool[] = [
-    {
-      title: String(count),
-      subtitle: 'Total de eventos'
-    },
-    {
-      title: 'Crear',
-      subtitle: 'Crear un nuevo evento',
-      onClick: () => {
-        setModalTitle('Crear nuevo evento')
-        setModalContent(
-          <AddEventForm
-            onClose={onEditClose}
-            onSubmit={addEventSubmit}
-          />
-        )
-        onEditOpen()
-      }
-    }
-  ]
+  const onAddEvent = () => {
+    setModalTitle('Crear nuevo evento')
+    setModalContent(
+      <AddEventForm
+        onClose={onEditClose}
+        onSubmit={addEventSubmit}
+      />
+    )
+    onEditOpen()
+  }
 
   return (
     <>
-      <Heading mb={4}>Eventos</Heading>
-      <Toolbar tools={tools} />
-      <Grid
-        templateRows='repeat(2, 1fr)'
-        templateColumns='repeat(6, 1fr)'
+      <Heading mb={5}>Eventos</Heading>
+      <Flex
+        my={4}
+        direction='row'
+        alignItems='center'
+        justifyContent='space-between'
+        w='full'
+      >
+        <Box>
+          <Tag size='lg' borderRadius='xl' variant='normal'>
+            <TagLabel>Total: {count}</TagLabel>
+          </Tag>
+        </Box>
+        <Box>
+          <Button
+            variant='normal'
+            leftIcon={<FaPlus />}
+            onClick={onAddEvent}
+          >
+            Crear
+          </Button>
+        </Box>
+      </Flex>
+      <Flex
+        direction={{ base: 'column', md: 'row' }}
+        w='full'
         gap={4}
       >
-        <GridItem
-          colSpan={1}
-          rowSpan={1}
-          bgColor='bg.alt'
-          borderRadius='xl'
-        >
-          <FilterCard
-            filters={filterInputs}
-            handleFilterChange={handleFilterChange}
-          />
-        </GridItem>
-        <GridItem colSpan={5} rowSpan={2}>
-          <Table columns={columns} rows={rows} isLoading={status === 'loading'} />
-        </GridItem>
-        <GridItem
-          colSpan={1}
-          rowSpan={1}
-          bgColor='bg.alt'
-          borderRadius='xl'
-        >
-          <Flex
-            justifyContent='start'
-            alignItems='center'
-            gap={4}
-            py={2} px={4}
-          >
-            <FaFilter />
-            <Text fontSize='l'>
-              Ordenar por:
-            </Text>
-          </Flex>
-        </GridItem>
-      </Grid>
+        <FilterCard
+          filters={filterInputs}
+          handleFilterChange={handleFilterChange}
+        />
+        <Table
+          columns={columns}
+          rows={rows}
+          isLoading={status === 'loading'}
+        />
+      </Flex>
       <Portal>
         <Modal isOpen={isEditOpen} onClose={onEditClose}>
           <ModalOverlay />
-          <ModalContent bgColor='bg.main'>
+          <ModalContent bgColor='bg.alt' borderRadius='xl'>
             <ModalHeader>{modalTitle}</ModalHeader>
             <ModalCloseButton />
             <ModalBody>

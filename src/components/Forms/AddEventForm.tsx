@@ -1,3 +1,4 @@
+import { useRef } from 'react'
 import {
   FormControl,
   FormLabel,
@@ -6,7 +7,9 @@ import {
   Button,
   VStack,
   Switch,
-  chakra
+  chakra,
+  HStack,
+  Text
 } from '@chakra-ui/react'
 import {
   useForm,
@@ -23,6 +26,8 @@ import {
   instance
 } from 'superstruct'
 import dayjs from 'dayjs'
+import { FaCloudUploadAlt, FaSave } from 'react-icons/fa'
+import { truncate } from 'lodash'
 import { IEvent } from '../../types/interfaces'
 
 type FormValues = Omit<IEvent, 'active' | 'flyer'> & { flyer: FileList }
@@ -52,6 +57,7 @@ const AddEventForm = ({ onClose, onSubmit }: Props) => {
   const {
     register,
     handleSubmit,
+    watch,
     formState: {
       errors
     }
@@ -65,45 +71,80 @@ const AddEventForm = ({ onClose, onSubmit }: Props) => {
     onClose()
   }
 
+  const { ref: uploadInputRef, ...uploadInputProps } = register('flyer')
+  const uploadInputClickRef = useRef<HTMLElement | null>(null)
+
+  const selectedFile = watch('flyer')
+
   return (
     <chakra.form onSubmit={handleSubmit(submitHandler)} encType='multipart/form-data'>
       <VStack pb={4}>
-        <FormControl isInvalid={!!errors.title}>
+        <FormControl isInvalid={!!errors.title} isRequired>
           <FormLabel>Título</FormLabel>
-          <Input variant='filled' type='text' {...register('title')} />
+          <Input variant='normal' type='text' {...register('title')} />
         </FormControl>
-        <FormControl isInvalid={!!errors.description}>
+        <FormControl isInvalid={!!errors.description} isRequired>
           <FormLabel>Descripción</FormLabel>
-          <Textarea variant='filled' {...register('description')} />
+          <Textarea variant='normal' {...register('description')} />
         </FormControl>
-        <FormControl isInvalid={!!errors.start}>
+        <FormControl isInvalid={!!errors.start} isRequired>
           <FormLabel>Fecha de inicio</FormLabel>
-          <Input variant='filled' type='datetime-local' {...register('start')} />
+          <Input variant='normal' type='datetime-local' {...register('start')} />
         </FormControl>
         <FormControl isInvalid={!!errors.end}>
           <FormLabel>Fecha de finalización</FormLabel>
           <Input
-            variant='filled'
+            variant='normal'
             type='datetime-local'
             {...register('end')}
           />
         </FormControl>
         <FormControl isInvalid={!!errors.ticketLink}>
           <FormLabel>Link para comprar boletos</FormLabel>
-          <Input variant='filled' type='text' {...register('ticketLink')} />
+          <Input variant='normal' type='text' {...register('ticketLink')} />
         </FormControl>
-        <FormControl isInvalid={!!errors.locationName}>
+        <FormControl isInvalid={!!errors.locationName} isRequired>
           <FormLabel>Ubicación</FormLabel>
-          <Input variant='filled' type='text' {...register('locationName')} />
+          <Input variant='normal' type='text' {...register('locationName')} />
         </FormControl>
         <FormControl isInvalid={!!errors.published}>
           <FormLabel htmlFor='published'>Publicado?</FormLabel>
           <Switch id='published' {...register('published')} />
         </FormControl>
-        <FormControl isInvalid={!!errors.flyer}>
-          <Input type='file' {...register('flyer')} />
+        <FormControl isInvalid={!!errors.flyer} isRequired>
+          <FormLabel htmlFor='flyer'>Flyer</FormLabel>
+          <HStack>
+            <Button
+              leftIcon={<FaCloudUploadAlt />}
+              variant='alt'
+              onClick={() => {
+                uploadInputClickRef.current && uploadInputClickRef.current.click()
+              }}
+            >
+              Elegir imagen
+            </Button>
+            {selectedFile && <Text>{truncate(selectedFile[0]?.name, { length: 20 })}</Text>}
+          </HStack>
+          <Input
+            id='flyer'
+            type='file'
+            accept='image/*'
+            display='none'
+            ref={el => {
+              uploadInputClickRef.current = el
+              uploadInputRef(el)
+            }}
+            {...uploadInputProps}
+          />
         </FormControl>
-        <Button alignSelf='end' type='submit'>Guardar</Button>
+        <Button
+          alignSelf='end'
+          type='submit'
+          variant='alt'
+          leftIcon={<FaSave />}
+        >
+          Guardar
+        </Button>
       </VStack>
     </chakra.form>
   )

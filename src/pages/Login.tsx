@@ -61,7 +61,7 @@ const Login = () => {
 
   return (
     <Flex h='100vh' align='center' justify='center'>
-      <Flex p={12} direction='column' background='bg.alt' rounded={6}>
+      <Flex p={12} direction='column' background='bg.alt' borderRadius='xl'>
         <Heading pb={6}>Iniciar sesión</Heading>
         <chakra.form
           onSubmit={handleSubmit(onSubmit)}
@@ -71,7 +71,7 @@ const Login = () => {
             <Input
               {...register('username', { required: true })}
               placeholder='Usuario o Email'
-              variant='filled'
+              variant='normal'
               mb={2}
             />
           </FormControl>
@@ -80,21 +80,14 @@ const Login = () => {
               {...register('password', { required: true })}
               placeholder='Contraseña'
               type='password'
-              variant='filled'
+              variant='normal'
               mb={6}
             />
           </FormControl>
           <Button
-            w='full'
-            color='bg.main'
-            bgColor='brand.200'
-            _active={{
-              backgroundColor: 'brand.300'
-            }}
-            _hover={{
-              backgroundColor: 'brand.100'
-            }}
+            variant='brand'
             type='submit'
+            w='full'
           >
             Iniciar sesión
           </Button>

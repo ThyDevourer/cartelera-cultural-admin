@@ -11,14 +11,77 @@ const config: ThemeConfig = {
 
 const Button: ComponentStyleConfig = {
   variants: {
-    brand: {
+    normal: {
       bg: 'bg.alt',
       borderRadius: 'xl',
       _hover: {
-        backgroundColor: '#541269'
+        backgroundColor: 'brand.500'
       },
       _active: {
-        backgroundColor: '#70188C'
+        backgroundColor: 'brand.400'
+      }
+    },
+    brand: {
+      color: 'bg.main',
+      bg: 'brand.300',
+      borderRadius: 'xl',
+      _hover: {
+        backgroundColor: 'brand.100'
+      },
+      _active: {
+        backgroundColor: 'brand.400'
+      }
+    },
+    alt: {
+      bg: 'brand.500',
+      borderRadius: 'xl',
+      _hover: {
+        bg: 'brand.400'
+      },
+      _active: {
+        bg: 'brand.500'
+      }
+    }
+  }
+}
+
+const Input: ComponentStyleConfig = {
+  variants: {
+    normal: {
+      field: {
+        bg: 'brand.500',
+        _hover: {
+          bg: 'brand.400'
+        },
+        borderRadius: 'xl',
+        _placeholder: { color: 'brand.100', opacity: 0.8 }
+      }
+    }
+  }
+}
+
+const Textarea: ComponentStyleConfig = {
+  variants: {
+    normal: {
+      bg: 'brand.500',
+      _hover: {
+        bg: 'brand.400'
+      },
+      borderRadius: 'xl',
+      _placeholder: { color: 'brand.100', opacity: 0.8 }
+    }
+  }
+}
+
+const Tag: ComponentStyleConfig = {
+  variants: {
+    normal: {
+      container: {
+        borderRadius: 'xl',
+        fontWeight: 'bold',
+        bg: 'bg.alt',
+        px: 4,
+        py: 3
       }
     }
   }
@@ -37,7 +100,9 @@ export const theme = extendTheme({
     brand: {
       100: '#B33EDE',
       200: '#BB0FFA',
-      300: '#A204DC'
+      300: '#A204DC',
+      400: '#70188C',
+      500: '#541269'
     }
   },
   styles: {
@@ -58,6 +123,10 @@ export const theme = extendTheme({
     }
   },
   components: {
-    Button
+    Button,
+    Input,
+    Select: Input,
+    Textarea,
+    Tag
   }
 })

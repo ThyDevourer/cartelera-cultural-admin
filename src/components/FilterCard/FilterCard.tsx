@@ -6,7 +6,9 @@ import {
   VStack,
   FormControl,
   FormLabel,
-  Select
+  Select,
+  Box,
+  Center
 } from '@chakra-ui/react'
 import { FaFilter } from 'react-icons/fa'
 import { FilterShape } from '../../types/interfaces'
@@ -20,11 +22,11 @@ const FilterCard = ({ filters, handleFilterChange }: Props) => {
   const toRender = filters.map(filter => {
     if (filter.type === 'select') {
       return (
-        <FormControl key={filter.field}>
-          <FormLabel>{filter.name}</FormLabel>
+        <FormControl key={filter.field} mb={4}>
+          <FormLabel fontSize='sm' ml={2}>{filter.name}</FormLabel>
           <Select
             w='full'
-            variant='filled'
+            variant='normal'
             onChange={e => handleFilterChange(e, filter.field)}
           >
             {filter.options.map(({ name, value }) => (
@@ -35,11 +37,11 @@ const FilterCard = ({ filters, handleFilterChange }: Props) => {
       )
     }
     return (
-      <FormControl key={filter.field}>
-        <FormLabel>{filter.name}</FormLabel>
+      <FormControl key={filter.field} mb={4}>
+        <FormLabel ml={2} mb={1} fontSize='sm'>{filter.name}</FormLabel>
         <Input
           w='full'
-          variant='filled'
+          variant='normal'
           type={filter.type}
           placeholder={filter.placeholder ?? ''}
           onChange={e => handleFilterChange(e, filter.field)}
@@ -49,19 +51,33 @@ const FilterCard = ({ filters, handleFilterChange }: Props) => {
   })
 
   return (
-    <VStack p={4}>
+    <VStack
+      bgColor='bg.alt'
+      borderRadius='xl'
+    >
       <Flex
         justifyContent='start'
         alignItems='center'
         gap={4}
         w='full'
+        bgColor='brand.500'
+        borderTopRadius='xl'
       >
-        <FaFilter />
-        <Text fontSize='l'>
+        <Center ml={6}>
+          <FaFilter />
+        </Center>
+        <Text
+          fontSize='xs'
+          textTransform='uppercase'
+          fontWeight='bold'
+          py={3}
+        >
           Filtrar por:
         </Text>
       </Flex>
-      {toRender}
+      <Box w='full' px={4}>
+        {toRender}
+      </Box>
     </VStack>
   )
 }

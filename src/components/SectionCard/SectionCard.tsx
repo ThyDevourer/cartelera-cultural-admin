@@ -19,6 +19,12 @@ const SectionCard = ({ page }: Props) => {
       p={6}
       w='full'
       bgColor='bg.alt'
+      _hover={{
+        backgroundColor: 'brand.500'
+      }}
+      _active={{
+        backgroundColor: 'brand.400'
+      }}
       borderRadius='xl'
       onClick={() => navigate(page.href)}
       cursor='pointer'

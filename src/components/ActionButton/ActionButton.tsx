@@ -34,13 +34,7 @@ const ActionButtons = ({ id, onEdit, onDelete }: Props) => {
     <HStack>
       {actions.map(action => (
         <Button
-          bgColor='transparent'
-          _active={{
-            backgroundColor: 'brand.300'
-          }}
-          _hover={{
-            backgroundColor: 'bg.alt'
-          }}
+          variant='alt'
           key={action.name}
           onClick={action.callback}
           disabled={action.disabled}

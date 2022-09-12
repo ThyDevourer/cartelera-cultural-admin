@@ -34,13 +34,11 @@ const useEvents = () => {
   const filterInputs: FilterShape[] = [
     {
       name: 'Título',
-      field: 'title',
-      placeholder: 'Título...'
+      field: 'title'
     },
     {
       name: 'Descripción',
-      field: 'description',
-      placeholder: 'Descripción...'
+      field: 'description'
     },
     {
       name: 'Link para comprar boletos?',

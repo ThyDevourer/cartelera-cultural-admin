@@ -64,27 +64,27 @@ const EditEventForm = ({ event, onClose }: Props) => {
       <VStack pb={4}>
         <FormControl>
           <FormLabel>Título</FormLabel>
-          <Input variant='filled' type='text' {...register('title')} />
+          <Input variant='normal' type='text' {...register('title')} />
         </FormControl>
         <FormControl>
           <FormLabel>Descripción</FormLabel>
-          <Textarea variant='filled' {...register('description')} />
+          <Textarea variant='normal' {...register('description')} />
         </FormControl>
         <FormControl>
           <FormLabel>Fecha de inicio</FormLabel>
-          <Input variant='filled' type='datetime-local' {...register('start')} />
+          <Input variant='normal' type='datetime-local' {...register('start')} />
         </FormControl>
         <FormControl>
           <FormLabel>Fecha de finalización</FormLabel>
-          <Input variant='filled' type='datetime-local' {...register('end')} />
+          <Input variant='normal' type='datetime-local' {...register('end')} />
         </FormControl>
         <FormControl>
           <FormLabel>Link para comprar boletos</FormLabel>
-          <Input variant='filled' type='text' {...register('ticketLink')} />
+          <Input variant='normal' type='text' {...register('ticketLink')} />
         </FormControl>
         <FormControl>
           <FormLabel>Ubicación</FormLabel>
-          <Input variant='filled' type='text' {...register('locationName')} />
+          <Input variant='normal' type='text' {...register('locationName')} />
         </FormControl>
         <FormControl>
           <FormLabel htmlFor='published'>Publicado?</FormLabel>
