@@ -16,7 +16,9 @@ export const crud = async <TReq extends {}, TRes>(request: Request<TReq>): Promi
     if (payload instanceof FormData) {
       options.body = payload
     } else {
-      options.body = JSON.stringify(pickBy(payload, value => !!value))
+      options.body = JSON.stringify(pickBy(payload, value => {
+        return value !== null && value !== undefined && value !== ''
+      }))
       headers['Content-Type'] = 'application/json'
     }
   }
