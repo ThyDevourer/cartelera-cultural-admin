@@ -4,7 +4,13 @@ import { useState, useCallback, ChangeEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { crud } from '../services/crud.service'
 import { useSessionStore } from './useSessionStore'
-import { IEvent, EventFilters, Response, FilterShape } from '../types/interfaces'
+import {
+  IEvent,
+  EventFilters,
+  Response,
+  FilterShape,
+  SubmitParams
+} from '../types/interfaces'
 import { debounce } from 'lodash'
 import { APIError } from '../utils/error'
 
@@ -86,6 +92,7 @@ const useEvents = () => {
     })
     return res
   })
+
   const { data: totalData } = useQuery(['events', 'total'], async () => {
     const res = await crud<{}, number>({
       method: 'GET',
@@ -93,6 +100,7 @@ const useEvents = () => {
     })
     return res
   })
+
   const addEvent = useMutation({
     mutationFn: async (event: IEvent) => {
       const res = await crud<IEvent, IEvent>({
@@ -105,9 +113,8 @@ const useEvents = () => {
       })
       return res
     },
-    onMutate: async (event: IEvent) => {
-      await client.cancelQueries(['events', filters])
-      await client.cancelQueries(['events', 'total'])
+    onMutate: async (event) => {
+      await client.cancelQueries(['events'])
       const prevEvents = client.getQueryData<Response<IEvent[]>>(['events', filters])
       if (prevEvents) {
         client.setQueryData(['events', filters], {
@@ -139,9 +146,98 @@ const useEvents = () => {
     }
   })
 
-  const addEventSubmit = async (payload: Omit<IEvent, 'flyer'>, image: FileList) => {
+  const updateEvent = useMutation({
+    mutationFn: async (event: IEvent) => {
+      const res = await crud<IEvent, IEvent>({
+        method: 'PUT',
+        endpoint: `events/${event._id}`,
+        payload: event,
+        meta: {
+          token
+        }
+      })
+      return res
+    },
+    onMutate: async (event) => {
+      await client.cancelQueries(['events'])
+      const prevEvents = client.getQueryData<Response<IEvent[]>>(['events', filters])
+      if (prevEvents) {
+        const newEvents = [...prevEvents.data]
+        newEvents[newEvents.findIndex(e => e._id === event._id)] = event
+        client.setQueryData(['events', filters], {
+          ...prevEvents,
+          data: newEvents
+        })
+      }
+      return { prevEvents }
+    },
+    onError: (err: Error, _, context: any) => {
+      toast({
+        title: 'Error',
+        description: err.message,
+        status: 'error',
+        duration: 5000,
+        isClosable: true
+      })
+      if (err instanceof APIError) {
+        if (err.status === 401) {
+          logout()
+        }
+      }
+      if (context?.prevEvents) {
+        client.setQueryData<IEvent[]>(['events', filters], context.prevEvents)
+      }
+    }
+  })
+
+  const { mutate: deleteEvent } = useMutation({
+    mutationFn: async (_id: string) => {
+      const res = await crud<string, null>({
+        method: 'DELETE',
+        endpoint: `events/${_id}`,
+        meta: {
+          token
+        }
+      })
+      return res
+    },
+    onMutate: async (_id) => {
+      await client.cancelQueries(['events'])
+      const prevEvents = client.getQueryData<Response<IEvent[]>>(['events', filters])
+      if (prevEvents) {
+        client.setQueryData(['events', filters], {
+          data: [...prevEvents.data.filter(event => event._id !== _id)],
+          meta: {
+            ...prevEvents.meta,
+            count: count - 1
+          }
+        })
+      }
+    },
+    onError: (err: Error, _, context: any) => {
+      toast({
+        title: 'Error',
+        description: err.message,
+        status: 'error',
+        duration: 5000,
+        isClosable: true
+      })
+      if (err instanceof APIError) {
+        if (err.status === 401) {
+          logout()
+        }
+      }
+      if (context?.prevEvents) {
+        client.setQueryData<IEvent[]>(['events', filters], context.prevEvents)
+      }
+    }
+  })
+
+  const eventSubmit = async ({ payload, image, action }: SubmitParams<Omit<IEvent, 'flyer'>>) => {
     const formData = new FormData()
-    formData.append('image', image[0])
+    if (image) {
+      formData.append('image', image[0])
+    }
     const { data: imgUrl } = await crud<FormData, string>({
       method: 'POST',
       endpoint: 'upload/image',
@@ -150,8 +246,11 @@ const useEvents = () => {
         token
       }
     })
-    console.log(imgUrl)
-    addEvent.mutate({ ...payload, flyer: imgUrl })
+    if (action === 'add') {
+      addEvent.mutate({ ...payload, flyer: imgUrl })
+    } else if (action === 'edit') {
+      updateEvent.mutate({ ...payload, flyer: imgUrl })
+    }
   }
 
   const rows = data?.data ?? []
@@ -194,10 +293,12 @@ const useEvents = () => {
     skip,
     setSkip,
     addEvent,
+    updateEvent,
+    deleteEvent,
     count,
     handleFilterChange,
     filterInputs,
-    addEventSubmit
+    eventSubmit
   }
 }
 

@@ -139,3 +139,17 @@ export type FilterShape = {
     value: any
   }[]
 }
+
+export interface ActionShape {
+  name: string
+  label: string
+  icon: ReactElement
+  onClick: () => void
+  disabled: boolean
+}
+
+export interface SubmitParams<TPayload> {
+  payload: TPayload
+  image?: FileList
+  action: 'add' | 'edit'
+}

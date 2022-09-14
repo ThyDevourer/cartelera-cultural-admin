@@ -28,12 +28,16 @@ import {
 import dayjs from 'dayjs'
 import { FaCloudUploadAlt, FaSave } from 'react-icons/fa'
 import { truncate } from 'lodash'
-import { IEvent } from '../../types/interfaces'
+import { IEvent, SubmitParams } from '../../types/interfaces'
 
 type FormValues = Omit<IEvent, 'active' | 'flyer'> & { flyer: FileList }
 
 interface Props {
-  onSubmit: (payload: Omit<FormValues, 'flyer'>, image: FileList) => void
+  onSubmit: ({
+    payload,
+    image,
+    action
+  }: SubmitParams<Omit<IEvent, 'active' | 'flyer'>>) => void
   onClose: () => void
 }
 
@@ -67,7 +71,7 @@ const AddEventForm = ({ onClose, onSubmit }: Props) => {
 
   const submitHandler: SubmitHandler<FormValues> = async (data) => {
     const { flyer, ...rest } = data
-    onSubmit(rest, flyer)
+    onSubmit({ payload: rest, image: flyer, action: 'add' })
     onClose()
   }
 

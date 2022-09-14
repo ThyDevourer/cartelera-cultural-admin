@@ -28,12 +28,11 @@ import {
 import dayjs from 'dayjs'
 import { FaPlus } from 'react-icons/fa'
 import useEvents from '../hooks/useEvents'
-import { IEvent, Tool } from '../types/interfaces'
+import { IEvent } from '../types/interfaces'
 import Table from '../components/Table/Table'
 import ActionButtons from '../components/ActionButton/ActionButton'
 import EditEventForm from '../components/Forms/EditEventForm'
 import AddEventForm from '../components/Forms/AddEventForm'
-import Toolbar from '../components/Toolbar/Toolbar'
 import FilterCard from '../components/FilterCard/FilterCard'
 
 const Events = () => {
@@ -47,35 +46,51 @@ const Events = () => {
     skip,
     setSkip,
     addEvent,
+    deleteEvent,
     count,
-    addEventSubmit
+    eventSubmit
   } = useEvents()
   const [modalContent, setModalContent] = useState<ReactElement | null>(null)
   const [modalTitle, setModalTitle] = useState('')
   const {
-    isOpen: isEditOpen,
-    onOpen: onEditOpen,
-    onClose: onEditClose
+    isOpen: isModalOpen,
+    onOpen: onModalOpen,
+    onClose: onModalClose
   } = useDisclosure()
   const {
     isOpen: isDeleteOpen,
     onOpen: onDeleteOpen,
     onClose: onDeleteClose
   } = useDisclosure()
+  const [selectedEvent, setSelectedEvent] = useState<IEvent | null>(null)
 
   const onEdit = (id: string) => {
-    const event = rows?.find(row => row._id === id)
+    const event = rows.find(row => row._id === id)
     if (event) {
-      setModalContent(<EditEventForm event={event} onClose={onEditClose} />)
+      setModalContent(
+        <EditEventForm
+          event={event}
+          onClose={onModalClose}
+          onSubmit={eventSubmit}
+        />
+      )
       setModalTitle('Editar evento')
-      onEditOpen()
+      onModalOpen()
     }
   }
 
   const onDelete = (id: string) => {
-    const event = rows?.find(row => row._id === id)
+    const event = rows.find(row => row._id === id)
     if (event) {
+      setSelectedEvent(event)
       onDeleteOpen()
+    }
+  }
+
+  const onDeleteConfirm = () => {
+    if (selectedEvent) {
+      deleteEvent(selectedEvent._id)
+      onDeleteClose()
     }
   }
 
@@ -124,11 +139,11 @@ const Events = () => {
     setModalTitle('Crear nuevo evento')
     setModalContent(
       <AddEventForm
-        onClose={onEditClose}
-        onSubmit={addEventSubmit}
+        onClose={onModalClose}
+        onSubmit={eventSubmit}
       />
     )
-    onEditOpen()
+    onModalOpen()
   }
 
   return (
@@ -172,7 +187,7 @@ const Events = () => {
         />
       </Flex>
       <Portal>
-        <Modal isOpen={isEditOpen} onClose={onEditClose}>
+        <Modal isOpen={isModalOpen} onClose={onModalClose}>
           <ModalOverlay />
           <ModalContent bgColor='bg.alt' borderRadius='xl'>
             <ModalHeader>{modalTitle}</ModalHeader>
@@ -188,7 +203,7 @@ const Events = () => {
           onClose={onDeleteClose}
         >
           <AlertDialogOverlay>
-            <AlertDialogContent>
+            <AlertDialogContent bgColor='bg.alt'>
               <AlertDialogHeader>
                 Eliminar evento
               </AlertDialogHeader>
@@ -196,8 +211,20 @@ const Events = () => {
                 Esta operación no se puede deshacer, ¿deseas continuar?
               </AlertDialogBody>
               <AlertDialogFooter>
-                <Button ref={cancelRef} onClick={onDeleteClose}>Cancelar</Button>
-                <Button ml={3} onClick={() => null}>Eliminar</Button>
+                <Button
+                  ref={cancelRef}
+                  onClick={onDeleteClose}
+                  variant='brand'
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  ml={3}
+                  onClick={onDeleteConfirm}
+                  variant='alt'
+                >
+                  Eliminar
+                </Button>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialogOverlay>
