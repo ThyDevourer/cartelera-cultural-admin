@@ -35,7 +35,6 @@ const Table = <T, >({ columns, rows, isLoading }: Props<T>) => {
       h='75vh'
       overflowY='scroll'
       bgColor='bg.alt'
-      w='full'
     >
       <ChakraTable>
         <Thead
@@ -59,7 +58,7 @@ const Table = <T, >({ columns, rows, isLoading }: Props<T>) => {
             ? table.getRowModel().rows.map(row => (
               <Tr key={row.id} borderColor='brand.500'>
                 {row.getVisibleCells().map(cell => (
-                  <Td key={cell.id} py={2} borderColor='brand.500'>
+                  <Td key={cell.id} py={2} borderColor='brand.500' fontSize='sm'>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </Td>
                 ))}
