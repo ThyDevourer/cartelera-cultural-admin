@@ -54,6 +54,7 @@ const FilterCard = ({ filters, handleFilterChange }: Props) => {
     <VStack
       bgColor='bg.alt'
       borderRadius='xl'
+      h='min-content'
     >
       <Flex
         justifyContent='start'

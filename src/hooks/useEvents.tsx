@@ -1,6 +1,6 @@
 import shallow from 'zustand/shallow'
 import { useToast } from '@chakra-ui/react'
-import { useState, useCallback, ChangeEvent } from 'react'
+import { useState, useCallback, ChangeEvent, useEffect } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { crud } from '../services/crud.service'
 import { useSessionStore } from './useSessionStore'
@@ -80,7 +80,7 @@ const useEvents = () => {
   ]
   const [limit, setLimit] = useState(20)
   const [skip, setSkip] = useState(0)
-  const { status, data } = useQuery(['events', filters], async () => {
+  const { status, data } = useQuery(['events', { filters, limit, skip }], async () => {
     const res = await crud<{}, IEvent[]>({
       method: 'GET',
       endpoint: 'events',
@@ -115,9 +115,9 @@ const useEvents = () => {
     },
     onMutate: async (event) => {
       await client.cancelQueries(['events'])
-      const prevEvents = client.getQueryData<Response<IEvent[]>>(['events', filters])
+      const prevEvents = client.getQueryData<Response<IEvent[]>>(['events', { filters, limit, skip }])
       if (prevEvents) {
-        client.setQueryData(['events', filters], {
+        client.setQueryData(['events', { filters, limit, skip }], {
           data: [...prevEvents.data, event],
           meta: {
             ...prevEvents.meta,
@@ -141,7 +141,7 @@ const useEvents = () => {
         }
       }
       if (context?.prevEvents) {
-        client.setQueryData<IEvent[]>(['events', filters], context.prevEvents)
+        client.setQueryData<IEvent[]>(['events', { filters, limit, skip }], context.prevEvents)
       }
     }
   })
@@ -160,11 +160,11 @@ const useEvents = () => {
     },
     onMutate: async (event) => {
       await client.cancelQueries(['events'])
-      const prevEvents = client.getQueryData<Response<IEvent[]>>(['events', filters])
+      const prevEvents = client.getQueryData<Response<IEvent[]>>(['events', { filters, limit, skip }])
       if (prevEvents) {
         const newEvents = [...prevEvents.data]
         newEvents[newEvents.findIndex(e => e._id === event._id)] = event
-        client.setQueryData(['events', filters], {
+        client.setQueryData(['events', { filters, limit, skip }], {
           ...prevEvents,
           data: newEvents
         })
@@ -185,7 +185,7 @@ const useEvents = () => {
         }
       }
       if (context?.prevEvents) {
-        client.setQueryData<IEvent[]>(['events', filters], context.prevEvents)
+        client.setQueryData<IEvent[]>(['events', { filters, limit, skip }], context.prevEvents)
       }
     }
   })
@@ -203,9 +203,9 @@ const useEvents = () => {
     },
     onMutate: async (_id) => {
       await client.cancelQueries(['events'])
-      const prevEvents = client.getQueryData<Response<IEvent[]>>(['events', filters])
+      const prevEvents = client.getQueryData<Response<IEvent[]>>(['events', { filters, limit, skip }])
       if (prevEvents) {
-        client.setQueryData(['events', filters], {
+        client.setQueryData(['events', { filters, limit, skip }], {
           data: [...prevEvents.data.filter(event => event._id !== _id)],
           meta: {
             ...prevEvents.meta,
@@ -228,7 +228,7 @@ const useEvents = () => {
         }
       }
       if (context?.prevEvents) {
-        client.setQueryData<IEvent[]>(['events', filters], context.prevEvents)
+        client.setQueryData<IEvent[]>(['events', { filters, limit, skip }], context.prevEvents)
       }
     }
   })
@@ -283,6 +283,21 @@ const useEvents = () => {
     }
   }, 300), [])
 
+  const [page, setPage] = useState(0)
+  const maxPage = Math.ceil(count / limit) - 1
+  const lowerShown = (page * limit) + 1
+  const upperShown = (page * limit) + rows.length
+
+  useEffect(() => {
+    setSkip(limit * page)
+  }, [page])
+
+  useEffect(() => {
+    if (page > 0) {
+      setPage(0)
+    }
+  }, [filters])
+
   return {
     status,
     rows,
@@ -298,7 +313,12 @@ const useEvents = () => {
     count,
     handleFilterChange,
     filterInputs,
-    eventSubmit
+    eventSubmit,
+    page,
+    maxPage,
+    setPage,
+    lowerShown,
+    upperShown
   }
 }
 

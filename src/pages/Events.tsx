@@ -2,6 +2,7 @@ import { useState, useRef, ReactElement } from 'react'
 import {
   Flex,
   Heading,
+  Text,
   Portal,
   useDisclosure,
   Modal,
@@ -19,14 +20,27 @@ import {
   AlertDialogFooter,
   Tag,
   TagLabel,
-  Box
+  Box,
+  VStack,
+  Stack,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem
 } from '@chakra-ui/react'
 import {
   ColumnDef,
   createColumnHelper
 } from '@tanstack/react-table'
 import dayjs from 'dayjs'
-import { FaPlus } from 'react-icons/fa'
+import {
+  FaPlus,
+  FaChevronDown,
+  // FaChevronUp,
+  FaChevronLeft,
+  FaChevronRight
+} from 'react-icons/fa'
+import { truncate } from 'lodash'
 import useEvents from '../hooks/useEvents'
 import { IEvent } from '../types/interfaces'
 import Table from '../components/Table/Table'
@@ -43,12 +57,14 @@ const Events = () => {
     filterInputs,
     limit,
     setLimit,
-    skip,
-    setSkip,
-    addEvent,
+    page,
+    maxPage,
+    setPage,
     deleteEvent,
     count,
-    eventSubmit
+    eventSubmit,
+    lowerShown,
+    upperShown
   } = useEvents()
   const [modalContent, setModalContent] = useState<ReactElement | null>(null)
   const [modalTitle, setModalTitle] = useState('')
@@ -99,11 +115,11 @@ const Events = () => {
   const columns: ColumnDef<IEvent, any>[] = [
     columnHelper.accessor('title', {
       header: () => <span>Título</span>,
-      cell: info => info.getValue()
+      cell: info => truncate(info.getValue(), { length: 35 })
     }),
     columnHelper.accessor('description', {
       header: () => <span>Descripción</span>,
-      cell: info => info.getValue()
+      cell: info => truncate(info.getValue(), { length: 35 })
     }),
     columnHelper.accessor('start', {
       header: () => <span>Inicio</span>,
@@ -180,11 +196,79 @@ const Events = () => {
           filters={filterInputs}
           handleFilterChange={handleFilterChange}
         />
-        <Table
-          columns={columns}
-          rows={rows}
-          isLoading={status === 'loading'}
-        />
+        <Flex
+          direction='column'
+          w='full'
+          mb={4}
+          overflowX='hidden'
+          gap={4}
+        >
+          <Table
+            columns={columns}
+            rows={rows}
+            isLoading={status === 'loading'}
+          />
+          <Flex
+            w='full'
+            bgColor='bg.alt'
+            p={4}
+            borderRadius='xl'
+            alignItems='center'
+            justifyContent='space-between'
+            direction={{ base: 'column', lg: 'row' }}
+          >
+            <Text fontSize='sm'>
+              Mostrando {lowerShown} a {upperShown} de {count}
+            </Text>
+            <Stack
+              spacing={4}
+              direction={{ base: 'column', md: 'row' }}
+              alignItems='center'
+            >
+              <Text fontSize='sm'>
+                Resultados por página:
+              </Text>
+              <Menu>
+                <MenuButton
+                  as={Button}
+                  variant='alt'
+                  rightIcon={<FaChevronDown />}
+                  ml={4}
+                  fontSize='sm'
+                >
+                  {limit}
+                </MenuButton>
+                <MenuList>
+                  {[20, 50, 100, 200].map(value => (
+                    <MenuItem
+                      key={value}
+                      onClick={() => setLimit(value)}
+                    >
+                      {value}
+                    </MenuItem>
+                  ))}
+                </MenuList>
+              </Menu>
+              <Text fontSize='sm'>
+                Página {page + 1} de {maxPage + 1}
+              </Text>
+              <Button
+                variant='alt'
+                disabled={page === 0}
+                onClick={() => setPage(prev => prev - 1)}
+              >
+                <FaChevronLeft />
+              </Button>
+              <Button
+                variant='alt'
+                disabled={page === maxPage}
+                onClick={() => setPage(prev => prev + 1)}
+              >
+                <FaChevronRight />
+              </Button>
+            </Stack>
+          </Flex>
+        </Flex>
       </Flex>
       <Portal>
         <Modal isOpen={isModalOpen} onClose={onModalClose}>
