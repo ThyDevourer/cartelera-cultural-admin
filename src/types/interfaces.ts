@@ -84,6 +84,7 @@ export type Request<T = void> = {
     limit?: number
     skip?: number
     filters?: any
+    sort?: string
   }
 }
 
