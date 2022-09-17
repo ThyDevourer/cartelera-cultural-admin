@@ -80,14 +80,16 @@ const useEvents = () => {
   ]
   const [limit, setLimit] = useState(20)
   const [skip, setSkip] = useState(0)
-  const { status, data } = useQuery(['events', { filters, limit, skip }], async () => {
+  const [sort, setSort] = useState('start')
+  const { status, data } = useQuery(['events', { filters, limit, skip, sort }], async () => {
     const res = await crud<{}, IEvent[]>({
       method: 'GET',
       endpoint: 'events',
       meta: {
         filters,
         limit,
-        skip
+        skip,
+        sort
       }
     })
     return res
@@ -115,9 +117,9 @@ const useEvents = () => {
     },
     onMutate: async (event) => {
       await client.cancelQueries(['events'])
-      const prevEvents = client.getQueryData<Response<IEvent[]>>(['events', { filters, limit, skip }])
+      const prevEvents = client.getQueryData<Response<IEvent[]>>(['events', { filters, limit, skip, sort }])
       if (prevEvents) {
-        client.setQueryData(['events', { filters, limit, skip }], {
+        client.setQueryData(['events', { filters, limit, skip, sort }], {
           data: [...prevEvents.data, event],
           meta: {
             ...prevEvents.meta,
@@ -141,7 +143,7 @@ const useEvents = () => {
         }
       }
       if (context?.prevEvents) {
-        client.setQueryData<IEvent[]>(['events', { filters, limit, skip }], context.prevEvents)
+        client.setQueryData<IEvent[]>(['events', { filters, limit, skip, sort }], context.prevEvents)
       }
     }
   })
@@ -160,11 +162,11 @@ const useEvents = () => {
     },
     onMutate: async (event) => {
       await client.cancelQueries(['events'])
-      const prevEvents = client.getQueryData<Response<IEvent[]>>(['events', { filters, limit, skip }])
+      const prevEvents = client.getQueryData<Response<IEvent[]>>(['events', { filters, limit, skip, sort }])
       if (prevEvents) {
         const newEvents = [...prevEvents.data]
         newEvents[newEvents.findIndex(e => e._id === event._id)] = event
-        client.setQueryData(['events', { filters, limit, skip }], {
+        client.setQueryData(['events', { filters, limit, skip, sort }], {
           ...prevEvents,
           data: newEvents
         })
@@ -185,7 +187,7 @@ const useEvents = () => {
         }
       }
       if (context?.prevEvents) {
-        client.setQueryData<IEvent[]>(['events', { filters, limit, skip }], context.prevEvents)
+        client.setQueryData<IEvent[]>(['events', { filters, limit, skip, sort }], context.prevEvents)
       }
     }
   })
@@ -203,9 +205,9 @@ const useEvents = () => {
     },
     onMutate: async (_id) => {
       await client.cancelQueries(['events'])
-      const prevEvents = client.getQueryData<Response<IEvent[]>>(['events', { filters, limit, skip }])
+      const prevEvents = client.getQueryData<Response<IEvent[]>>(['events', { filters, limit, skip, sort }])
       if (prevEvents) {
-        client.setQueryData(['events', { filters, limit, skip }], {
+        client.setQueryData(['events', { filters, limit, skip, sort }], {
           data: [...prevEvents.data.filter(event => event._id !== _id)],
           meta: {
             ...prevEvents.meta,
@@ -228,7 +230,7 @@ const useEvents = () => {
         }
       }
       if (context?.prevEvents) {
-        client.setQueryData<IEvent[]>(['events', { filters, limit, skip }], context.prevEvents)
+        client.setQueryData<IEvent[]>(['events', { filters, limit, skip, sort }], context.prevEvents)
       }
     }
   })
@@ -298,6 +300,15 @@ const useEvents = () => {
     }
   }, [filters])
 
+  const toggleSort = (sortOperator: string) => {
+    setSort((prevSort) => {
+      if (prevSort === `-${sortOperator}` || prevSort !== sortOperator) {
+        return sortOperator
+      }
+      return `-${sortOperator}`
+    })
+  }
+
   return {
     status,
     rows,
@@ -318,7 +329,9 @@ const useEvents = () => {
     maxPage,
     setPage,
     lowerShown,
-    upperShown
+    upperShown,
+    sort,
+    toggleSort
   }
 }
 

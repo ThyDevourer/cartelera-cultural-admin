@@ -21,7 +21,6 @@ import {
   Tag,
   TagLabel,
   Box,
-  VStack,
   Stack,
   Menu,
   MenuButton,
@@ -48,6 +47,7 @@ import ActionButtons from '../components/ActionButton/ActionButton'
 import EditEventForm from '../components/Forms/EditEventForm'
 import AddEventForm from '../components/Forms/AddEventForm'
 import FilterCard from '../components/FilterCard/FilterCard'
+import HeaderButton from '../components/HeaderButton/HeaderButton'
 
 const Events = () => {
   const {
@@ -64,7 +64,9 @@ const Events = () => {
     count,
     eventSubmit,
     lowerShown,
-    upperShown
+    upperShown,
+    sort,
+    toggleSort
   } = useEvents()
   const [modalContent, setModalContent] = useState<ReactElement | null>(null)
   const [modalTitle, setModalTitle] = useState('')
@@ -114,26 +116,61 @@ const Events = () => {
 
   const columns: ColumnDef<IEvent, any>[] = [
     columnHelper.accessor('title', {
-      header: () => <span>Título</span>,
+      header: col => (
+        <HeaderButton
+          onClick={() => toggleSort(col.header.id)}
+          text='Título'
+          sort={sort}
+          column={col.column.id}
+        />
+      ),
       cell: info => truncate(info.getValue(), { length: 35 })
     }),
     columnHelper.accessor('description', {
-      header: () => <span>Descripción</span>,
+      header: col => (
+        <HeaderButton
+          onClick={() => toggleSort(col.header.id)}
+          text='Descripción'
+          sort={sort}
+          column={col.column.id}
+        />
+      ),
       cell: info => truncate(info.getValue(), { length: 35 })
     }),
     columnHelper.accessor('start', {
-      header: () => <span>Inicio</span>,
+      header: col => (
+        <HeaderButton
+          onClick={() => toggleSort(col.header.id)}
+          text='Inicio'
+          sort={sort}
+          column={col.column.id}
+        />
+      ),
       cell: info => dayjs(info.getValue()).format('DD / MM / YYYY hh:mm A')
     }),
     columnHelper.accessor('end', {
-      header: () => <span>Fin</span>,
+      header: col => (
+        <HeaderButton
+          onClick={() => toggleSort(col.header.id)}
+          text='Fin'
+          sort={sort}
+          column={col.column.id}
+        />
+      ),
       cell: ({ getValue }) => {
         const date = getValue()
         return date ? dayjs(date).format('DD / MM / YYYY hh:mm A') : null
       }
     }),
     columnHelper.accessor('published', {
-      header: () => <span>Publicado?</span>,
+      header: col => (
+        <HeaderButton
+          onClick={() => toggleSort(col.header.id)}
+          text='Publicado?'
+          sort={sort}
+          column={col.column.id}
+        />
+      ),
       cell: info => info.getValue() ? 'Si' : 'No'
     }),
     {

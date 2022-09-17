@@ -4,9 +4,10 @@ interface ParseQueryParamsParams {
   filters?: any
   limit?: number
   skip?: number
+  sort?: string
 }
 
-export const parseQueryParams = ({ filters, limit, skip }: ParseQueryParamsParams) => {
+export const parseQueryParams = ({ filters, limit, skip, sort }: ParseQueryParamsParams) => {
   const parseFilters = (filters: any) => {
     const result: any = {}
     Object.entries(filters).forEach(([k, v]) => {
@@ -31,6 +32,9 @@ export const parseQueryParams = ({ filters, limit, skip }: ParseQueryParamsParam
   }
   if (filters) {
     query.filters = parseFilters(filters)
+  }
+  if (sort) {
+    query.sort = sort
   }
   return qs.stringify(query)
 }

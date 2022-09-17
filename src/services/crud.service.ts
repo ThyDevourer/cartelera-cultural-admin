@@ -25,7 +25,8 @@ export const crud = async <TReq extends {}, TRes>(request: Request<TReq>): Promi
   let query = parseQueryParams({
     filters: meta?.filters,
     limit: meta?.limit,
-    skip: meta?.skip
+    skip: meta?.skip,
+    sort: meta?.sort
   })
   if (query) {
     query = `?${query}`
