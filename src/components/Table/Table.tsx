@@ -46,7 +46,12 @@ const Table = <T, >({ columns, rows, isLoading }: Props<T>) => {
           {table.getHeaderGroups().map(headerGroup => (
             <Tr key={headerGroup.id}>
               {headerGroup.headers.map(header => (
-                <Th color='fg.main' key={header.id} borderColor='transparent'>
+                <Th
+                  color='fg.main'
+                  key={header.id}
+                  borderColor='transparent'
+                  isNumeric={header.id === 'actions'}
+                >
                   {flexRender(header.column.columnDef.header, header.getContext())}
                 </Th>
               ))}
@@ -58,13 +63,18 @@ const Table = <T, >({ columns, rows, isLoading }: Props<T>) => {
             ? table.getRowModel().rows.map(row => (
               <Tr key={row.id} borderColor='brand.500'>
                 {row.getVisibleCells().map(cell => (
-                  <Td key={cell.id} py={2} borderColor='brand.500' fontSize='sm'>
+                  <Td
+                    key={cell.id}
+                    py={2}
+                    borderColor='brand.500'
+                    fontSize='sm'
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </Td>
                 ))}
               </Tr>
             ))
-            : <TableSkeleton colQty={6} rowQty={20} />}
+            : <TableSkeleton colQty={columns.length} rowQty={20} />}
         </Tbody>
         <Tfoot>
           {table.getFooterGroups().map(footerGroup => (
