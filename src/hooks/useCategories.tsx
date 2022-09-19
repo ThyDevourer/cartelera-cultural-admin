@@ -30,12 +30,11 @@ export const useCategories = () => {
       field: 'name'
     },
     {
-      name: 'Activo?',
-      field: 'active',
+      name: 'Mostrar eliminados?',
+      field: 'showDeleted',
       type: 'select',
       placeholder: 'Selecciona una opción',
       options: [
-        { name: 'Todos', value: 'all' },
         { name: 'Si', value: true },
         { name: 'No', value: false }
       ]
@@ -47,8 +46,8 @@ export const useCategories = () => {
       case 'name':
         setFilters(prev => ({ ...prev, name: value }))
         break
-      case 'active':
-        setFilters(prev => ({ ...prev, active: value !== 'all' ? value : null }))
+      case 'showDeleted':
+        setFilters(prev => ({ ...prev, showDeleted: value }))
         break
     }
   }, 300), [])
