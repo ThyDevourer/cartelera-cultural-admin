@@ -68,10 +68,7 @@ export interface Response<T> {
   meta: {
     success: boolean
     message: string
-    count: {
-      total: number
-      filtered: number
-    }
+    count: number
   }
 }
 
@@ -119,6 +116,11 @@ export interface EventFilters {
   // categories: string[]
 }
 
+export interface CategoryFilters {
+  name: string
+  active: boolean | 'all'
+}
+
 export interface Tool {
   title: string
   subtitle: string
@@ -141,11 +143,11 @@ export type FilterShape = {
   }[]
 }
 
-export interface ActionShape {
+export interface ActionDef {
   name: string
   label: string
   icon: ReactElement
-  onClick: () => void
+  callback: (id: string) => void
   disabled: boolean
 }
 
