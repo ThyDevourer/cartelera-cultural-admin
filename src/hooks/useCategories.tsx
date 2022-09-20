@@ -22,7 +22,7 @@ export const useCategories = () => {
   const client = useQueryClient()
   const [filters, setFilters] = useState<CategoryFilters>({
     name: '',
-    active: 'all'
+    showDeleted: false
   })
   const filterInputs: FilterShape[] = [
     {
@@ -35,8 +35,8 @@ export const useCategories = () => {
       type: 'select',
       placeholder: 'Selecciona una opción',
       options: [
-        { name: 'Si', value: true },
-        { name: 'No', value: false }
+        { name: 'No', value: false },
+        { name: 'Si', value: true }
       ]
     }
   ]
@@ -47,7 +47,7 @@ export const useCategories = () => {
         setFilters(prev => ({ ...prev, name: value }))
         break
       case 'showDeleted':
-        setFilters(prev => ({ ...prev, showDeleted: value }))
+        setFilters(prev => ({ ...prev, showDeleted: value === 'true' }))
         break
     }
   }, 300), [])

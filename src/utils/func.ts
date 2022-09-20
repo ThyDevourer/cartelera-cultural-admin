@@ -11,14 +11,22 @@ export const parseQueryParams = ({ filters, limit, skip, sort }: ParseQueryParam
   const parseFilters = (filters: any) => {
     const result: any = {}
     Object.entries(filters).forEach(([k, v]) => {
-      if (v) {
-        if (typeof v === 'string' || v instanceof Array) {
-          if (v !== 'all') {
+      switch (typeof v) {
+        case 'number':
+        case 'boolean':
+          result[k] = v
+          break
+        case 'string':
+          if (v !== 'all' && v) {
             result[k] = v
           }
-        } else if (typeof v === 'object') {
-          result[k] = parseFilters(filters[k])
-        }
+          break
+        case 'object':
+          if (v instanceof Array) {
+            result[k] = v
+          } else {
+            result[k] = parseFilters(filters[k])
+          }
       }
     })
     return result
