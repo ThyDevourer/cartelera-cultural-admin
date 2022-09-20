@@ -118,7 +118,7 @@ export interface EventFilters {
 
 export interface CategoryFilters {
   name: string
-  active: boolean | 'all'
+  showDeleted: boolean
 }
 
 export interface Tool {
