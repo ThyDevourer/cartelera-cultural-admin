@@ -13,7 +13,8 @@ import {
 } from '@chakra-ui/react'
 import {
   useForm,
-  SubmitHandler
+  SubmitHandler,
+  Controller
 } from 'react-hook-form'
 import { superstructResolver } from '@hookform/resolvers/superstruct'
 import {
@@ -23,14 +24,20 @@ import {
   boolean,
   nonempty,
   refine,
-  instance
+  instance,
+  array
 } from 'superstruct'
 import dayjs from 'dayjs'
+import { Select } from 'chakra-react-select'
 import { FaCloudUploadAlt, FaSave } from 'react-icons/fa'
 import { truncate } from 'lodash'
-import { IEvent, SubmitParams } from '../../types/interfaces'
+import { ICategory, IEvent, SubmitParams } from '../../types/interfaces'
+import { useCategories } from '../../hooks/useCategories'
 
-type FormValues = Omit<IEvent, 'active' | 'flyer'> & { flyer: FileList }
+type FormValues = Omit<IEvent, 'active' | 'flyer' | 'categories'> & {
+  flyer: FileList
+  categories: { label: string, value: string }[]
+}
 
 interface Props {
   onSubmit: ({
@@ -55,7 +62,11 @@ const schema = object({
   })),
   ticketLink: optional(string()),
   locationName: optional(string()),
-  published: boolean()
+  published: boolean(),
+  categories: nonempty(array(object({
+    label: string(),
+    value: string()
+  })))
 })
 
 const EditEventForm = ({ event, onClose, onSubmit }: Props) => {
@@ -66,12 +77,14 @@ const EditEventForm = ({ event, onClose, onSubmit }: Props) => {
     end,
     ticketLink,
     locationName,
-    published
+    published,
+    categories: prevCategories
   } = event
   const {
     register,
     handleSubmit,
     watch,
+    control,
     formState: {
       errors
     }
@@ -87,13 +100,20 @@ const EditEventForm = ({ event, onClose, onSubmit }: Props) => {
       published
     }
   })
+  const { rows: categories } = useCategories()
+  const options = categories.map(category => ({ label: category.name, value: category._id }))
+  const initialCategories = prevCategories.map(category => {
+    const cat = categories.find(c => c._id === category)
+    return { label: cat?.name ?? '', value: cat?._id ?? '' }
+  })
 
   const submitHandler: SubmitHandler<FormValues> = async (data) => {
-    const { flyer, ...rest } = data
+    const { flyer, categories: newCategories, ...rest } = data
     onSubmit({
       payload: {
         ...rest,
-        _id: event._id
+        _id: event._id,
+        categories: newCategories.map(category => category.value)
       },
       image: flyer,
       action: 'edit'
@@ -140,6 +160,25 @@ const EditEventForm = ({ event, onClose, onSubmit }: Props) => {
         <FormControl isInvalid={!!errors.published}>
           <FormLabel htmlFor='published'>Publicado?</FormLabel>
           <Switch id='published' {...register('published')} />
+        </FormControl>
+        <FormControl isRequired isInvalid={!!errors.categories}>
+          <FormLabel>Categorías</FormLabel>
+          <Controller
+            name='categories'
+            control={control}
+            rules={{ required: true }}
+            defaultValue={initialCategories}
+            render={({ field }) => (
+              <Select
+                {...field}
+                isMulti
+                options={options}
+                placeholder='Selecciona una o varias categorías'
+                useBasicStyles
+                variant='filled'
+              />
+            )}
+          />
         </FormControl>
         <FormControl isInvalid={!!errors.flyer}>
           <FormLabel htmlFor='flyer'>Flyer</FormLabel>
