@@ -100,8 +100,6 @@ const AddEventForm = ({ onClose, onSubmit }: Props) => {
   const uploadInputClickRef = useRef<HTMLElement | null>(null)
 
   const selectedFile = watch('flyer')
-  const catsValues = watch('categories')
-  console.log(catsValues)
 
   return (
     <chakra.form onSubmit={handleSubmit(submitHandler)} encType='multipart/form-data'>
