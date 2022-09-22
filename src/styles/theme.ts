@@ -3,6 +3,7 @@ import {
   ThemeConfig,
   ComponentStyleConfig
 } from '@chakra-ui/react'
+import { set } from 'lodash'
 
 const config: ThemeConfig = {
   initialColorMode: 'dark',
@@ -47,7 +48,7 @@ const Button: ComponentStyleConfig = {
 
 const Input: ComponentStyleConfig = {
   variants: {
-    normal: {
+    filled: {
       field: {
         bg: 'brand.500',
         _hover: {
@@ -59,6 +60,8 @@ const Input: ComponentStyleConfig = {
     }
   }
 }
+
+set(Input, 'variants.normal', Input?.variants?.filled ?? {})
 
 const Textarea: ComponentStyleConfig = {
   variants: {
