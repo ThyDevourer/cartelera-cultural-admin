@@ -13,7 +13,8 @@ import {
 } from '@chakra-ui/react'
 import {
   useForm,
-  SubmitHandler
+  SubmitHandler,
+  Controller
 } from 'react-hook-form'
 import { superstructResolver } from '@hookform/resolvers/superstruct'
 import {
@@ -23,14 +24,20 @@ import {
   boolean,
   nonempty,
   refine,
-  instance
+  instance,
+  array
 } from 'superstruct'
 import dayjs from 'dayjs'
 import { FaCloudUploadAlt, FaSave } from 'react-icons/fa'
 import { truncate } from 'lodash'
+import { Select } from 'chakra-react-select'
 import { IEvent, SubmitParams } from '../../types/interfaces'
+import { useCategories } from '../../hooks/useCategories'
 
-type FormValues = Omit<IEvent, 'active' | 'flyer'> & { flyer: FileList }
+type FormValues = Omit<IEvent, 'active' | 'flyer' | 'categories'> & {
+  flyer: FileList
+  categories: { label: string, value: string }[]
+}
 
 interface Props {
   onSubmit: ({
@@ -54,13 +61,18 @@ const schema = object({
   })),
   ticketLink: optional(string()),
   locationName: optional(string()),
-  published: boolean()
+  published: boolean(),
+  categories: nonempty(array(object({
+    label: string(),
+    value: string()
+  })))
 })
 
 const AddEventForm = ({ onClose, onSubmit }: Props) => {
   const {
     register,
     handleSubmit,
+    control,
     watch,
     formState: {
       errors
@@ -68,10 +80,19 @@ const AddEventForm = ({ onClose, onSubmit }: Props) => {
   } = useForm<FormValues>({
     resolver: superstructResolver(schema)
   })
+  const { rows: categories } = useCategories()
+  const options = categories.map(category => ({ label: category.name, value: category._id }))
 
   const submitHandler: SubmitHandler<FormValues> = async (data) => {
-    const { flyer, ...rest } = data
-    onSubmit({ payload: rest, image: flyer, action: 'add' })
+    const { flyer, categories: cats, ...rest } = data
+    onSubmit({
+      payload: {
+        ...rest,
+        categories: cats.map(c => c.value)
+      },
+      image: flyer,
+      action: 'add'
+    })
     onClose()
   }
 
@@ -79,6 +100,8 @@ const AddEventForm = ({ onClose, onSubmit }: Props) => {
   const uploadInputClickRef = useRef<HTMLElement | null>(null)
 
   const selectedFile = watch('flyer')
+  const catsValues = watch('categories')
+  console.log(catsValues)
 
   return (
     <chakra.form onSubmit={handleSubmit(submitHandler)} encType='multipart/form-data'>
@@ -114,6 +137,25 @@ const AddEventForm = ({ onClose, onSubmit }: Props) => {
         <FormControl isInvalid={!!errors.published}>
           <FormLabel htmlFor='published'>Publicado?</FormLabel>
           <Switch id='published' {...register('published')} />
+        </FormControl>
+        <FormControl isRequired isInvalid={!!errors.categories}>
+          <FormLabel>Categorías</FormLabel>
+          <Controller
+            name='categories'
+            control={control}
+            rules={{ required: true }}
+            defaultValue={[]}
+            render={({ field }) => (
+              <Select
+                {...field}
+                isMulti
+                options={options}
+                placeholder='Selecciona una o varias categorías'
+                useBasicStyles
+                variant='filled'
+              />
+            )}
+          />
         </FormControl>
         <FormControl isInvalid={!!errors.flyer} isRequired>
           <FormLabel htmlFor='flyer'>Flyer</FormLabel>
