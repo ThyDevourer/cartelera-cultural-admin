@@ -118,16 +118,21 @@ const useEvents = () => {
     onMutate: async (event) => {
       await client.cancelQueries(['events'])
       const prevEvents = client.getQueryData<Response<IEvent[]>>(['events', { filters, limit, skip, sort }])
-      if (prevEvents) {
+      const prevTotalCount = client.getQueryData<Response<number>>(['events', 'total'])
+      if (prevEvents && prevTotalCount) {
         client.setQueryData(['events', { filters, limit, skip, sort }], {
-          data: [...prevEvents.data, event],
+          data: [...prevEvents.data, { ...event, _id: null }],
           meta: {
             ...prevEvents.meta,
-            count: count + 1
+            count: prevEvents.meta.count + 1
           }
         })
+        client.setQueryData(['events', 'total'], {
+          ...prevTotalCount,
+          data: prevTotalCount.data + 1
+        })
       }
-      return { prevEvents }
+      return { prevEvents, prevTotalCount }
     },
     onError: (err: Error, _, context: any) => {
       toast({
@@ -142,8 +147,20 @@ const useEvents = () => {
           logout()
         }
       }
-      if (context?.prevEvents) {
+      if (context?.prevEvents && context?.prevTotalCount) {
         client.setQueryData<IEvent[]>(['events', { filters, limit, skip, sort }], context.prevEvents)
+        client.setQueryData<Response<number>>(['events', 'total'], context.prevTotalCount)
+      }
+    },
+    onSuccess: ({ data: event }) => {
+      const prevEvents = client.getQueryData<Response<IEvent[]>>(['events', { filters, limit, skip, sort }])
+      if (prevEvents) {
+        const newEvents = [...prevEvents.data]
+        newEvents[newEvents.findIndex(e => e._id === null)] = event
+        client.setQueryData<Response<IEvent[]>>(['events', { filters, limit, skip, sort }], {
+          ...prevEvents,
+          data: newEvents
+        })
       }
     }
   })
