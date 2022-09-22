@@ -95,7 +95,6 @@ export const useCategories = () => {
     onMutate: async (category) => {
       await client.cancelQueries(['categories'])
       const prevCategories = client.getQueryData<Response<ICategory[]>>(['categories', { filters, limit, skip, sort }])
-      console.log('onMutate', prevCategories)
       const prevTotalCount = client.getQueryData<Response<number>>(['categories', 'total'])
       if (prevCategories && prevTotalCount) {
         client.setQueryData(['categories', { filters, limit, skip, sort }], {
@@ -135,7 +134,6 @@ export const useCategories = () => {
       if (prevCategories) {
         const newCategories = [...prevCategories.data]
         newCategories[newCategories.findIndex(c => c._id === null)] = category
-        console.log('onSuccess', prevCategories)
         client.setQueryData<Response<ICategory[]>>(['categories', { filters, limit, skip, sort }], {
           ...prevCategories,
           data: newCategories
@@ -241,7 +239,6 @@ export const useCategories = () => {
           ...prevTotalCount,
           data: prevTotalCount.data - 1
         })
-        console.log(prevTotalCount.data)
       }
       return { prevCategories, prevTotalCount }
     },
