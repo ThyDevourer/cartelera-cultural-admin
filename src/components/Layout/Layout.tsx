@@ -1,9 +1,12 @@
+import { Suspense } from 'react'
 import { Outlet } from 'react-router-dom'
 import {
   Box,
   Flex,
   VStack,
-  useDisclosure
+  useDisclosure,
+  Center,
+  Spinner
 } from '@chakra-ui/react'
 import { Page } from '../../types/interfaces'
 import Sidebar from '../Sidebar/Sidebar'
@@ -40,7 +43,9 @@ const Layout = ({ pages }: Props) => {
           h='full'
         >
           <Topbar onOpen={onOpen} isOpen={isOpen} onClose={onClose} />
-          <Outlet />
+          <Suspense fallback={<Center w='full' h='full'><Spinner size='xl' /></Center>}>
+            <Outlet />
+          </Suspense>
         </Box>
       </VStack>
     </Flex>

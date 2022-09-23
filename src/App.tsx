@@ -1,3 +1,4 @@
+import { lazy } from 'react'
 import {
   ChakraProvider,
   ColorModeScript
@@ -18,15 +19,14 @@ import {
   FaHome
 } from 'react-icons/fa'
 import Layout from './components/Layout/Layout'
-
-import Login from './pages/Login'
-import Home from './pages/Home'
-import Register from './pages/Register'
-import Verify from './pages/Verify'
-import Events from './pages/Events'
-import Categories from './pages/Categories'
-
 import { Page } from './types/interfaces'
+
+const Login = lazy(() => import('./pages/Login'))
+const Home = lazy(() => import('./pages/Home'))
+const Register = lazy(() => import('./pages/Register'))
+const Verify = lazy(() => import('./pages/Verify'))
+const Events = lazy(() => import('./pages/Events'))
+const Categories = lazy(() => import('./pages/Categories'))
 
 const pages: Page[] = [
   {
