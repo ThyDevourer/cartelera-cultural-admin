@@ -76,6 +76,15 @@ const useEvents = () => {
       name: 'Y',
       field: 'end.upper',
       type: 'datetime-local'
+    },
+    {
+      name: '¿Mostrar eliminados?',
+      field: 'showDeleted',
+      type: 'select',
+      options: [
+        { name: 'No', value: false },
+        { name: 'Si', value: true }
+      ]
     }
   ]
   const [limit, setLimit] = useState(20)
@@ -299,6 +308,8 @@ const useEvents = () => {
       case 'ticketLink':
         setFilters(prev => ({ ...prev, ticketLink: value !== 'all' ? value : null }))
         break
+      case 'showDeleted':
+        setFilters(prev => ({ ...prev, showDeleted: value === 'true' }))
     }
   }, 300), [])
 
