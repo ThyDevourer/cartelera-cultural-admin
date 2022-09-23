@@ -41,20 +41,21 @@ const AddCategoryForm = ({ onClose, onSubmit }: Props) => {
 
   const submitHandler: SubmitHandler<ICategory> = async (data) => {
     onSubmit(data)
+    onClose()
   }
 
   return (
     <chakra.form onSubmit={handleSubmit(submitHandler)}>
       <VStack pb={4}>
-        <FormControl isInvalid={!!errors.name} pb={4}>
+        <FormControl isInvalid={!!errors.name} pb={4} isRequired>
           <FormLabel>Nombre</FormLabel>
           <Input variant='normal' type='text' {...register('name')} />
         </FormControl>
         <Button
-          onClick={onClose}
           alignSelf='end'
           type='submit'
           leftIcon={<FaSave />}
+          variant='alt'
         >
           Guardar
         </Button>
