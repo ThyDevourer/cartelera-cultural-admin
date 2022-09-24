@@ -20,6 +20,7 @@ import {
 } from 'react-icons/fa'
 import Layout from './components/Layout/Layout'
 import { Page } from './types/interfaces'
+import Suspense from './components/Suspense/Suspense'
 
 const Login = lazy(() => import('./pages/Login'))
 const Home = lazy(() => import('./pages/Home'))
@@ -75,16 +76,20 @@ const App = () => {
                   />
                 ))}
               </Route>
-              <Route path='/login' element={<Login />} />
-              <Route path='/register' element={<Register />} />
-              <Route
-                path='/verify'
-                element={
-                  <PrivateRoute>
-                    <Verify />
-                  </PrivateRoute>
-                }
-              />
+              <Route element={<Suspense />}>
+                <Route path='/login' element={<Login />} />
+                <Route path='/register' element={<Register />} />
+                <Route
+                  path='/verify'
+                  element={
+                    <PrivateRoute>
+                      <Suspense>
+                        <Verify />
+                      </Suspense>
+                    </PrivateRoute>
+                  }
+                />
+              </Route>
               <Route path='*' element={<Navigate to='/' />} />
             </Routes>
             <ReactQueryDevtools />
