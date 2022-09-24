@@ -69,7 +69,7 @@ const Register = () => {
 
   return (
     <Flex h='100vh' align='center' justify='center'>
-      <Flex p={12} direction='column' background='gray.700' rounded={6}>
+      <Flex p={12} direction='column' background='bg.alt' rounded={6}>
         <Heading pb={6}>Regístrate</Heading>
         <chakra.form
           onSubmit={handleSubmit(onSubmit)}
@@ -79,7 +79,7 @@ const Register = () => {
             <Input
               {...register('name', { required: true })}
               placeholder='Nombre'
-              variant='filled'
+              variant='normal'
               mb={2}
             />
           </FormControl>
@@ -87,7 +87,7 @@ const Register = () => {
             <Input
               {...register('lastName', { required: true })}
               placeholder='Apellido'
-              variant='filled'
+              variant='normal'
               mb={2}
             />
           </FormControl>
@@ -95,7 +95,7 @@ const Register = () => {
             <Input
               {...register('username', { required: true })}
               placeholder='Nombre de Usuario'
-              variant='filled'
+              variant='normal'
               mb={2}
             />
           </FormControl>
@@ -103,7 +103,7 @@ const Register = () => {
             <Input
               {...register('email', { required: true })}
               placeholder='Email'
-              variant='filled'
+              variant='normal'
               mb={2}
             />
           </FormControl>
@@ -112,11 +112,11 @@ const Register = () => {
               {...register('password', { required: true })}
               placeholder='Contraseña'
               type='password'
-              variant='filled'
+              variant='normal'
               mb={6}
             />
           </FormControl>
-          <Button w='full' colorScheme='purple' type='submit'>Crear cuenta</Button>
+          <Button w='full' variant='brand' type='submit'>Crear cuenta</Button>
         </chakra.form>
       </Flex>
     </Flex>
