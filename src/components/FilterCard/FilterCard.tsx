@@ -11,19 +11,20 @@ import {
   Center
 } from '@chakra-ui/react'
 import { FaFilter } from 'react-icons/fa'
+import { Select as MSelect } from 'chakra-react-select'
 import { FilterShape } from '../../types/interfaces'
 
 interface Props {
   filters: FilterShape[]
-  handleFilterChange: (event: ChangeEvent, type: string) => void
+  handleFilterChange: (event: ChangeEvent | readonly Record<string, string>[], type: string) => void
 }
 
 const FilterCard = ({ filters, handleFilterChange }: Props) => {
   const toRender = filters.map(filter => {
+    let input
     if (filter.type === 'select') {
-      return (
-        <FormControl key={filter.field} mb={4}>
-          <FormLabel fontSize='sm' ml={2}>{filter.name}</FormLabel>
+      input = (
+        <>
           <Select
             w='full'
             variant='normal'
@@ -33,19 +34,33 @@ const FilterCard = ({ filters, handleFilterChange }: Props) => {
               <option key={`${name}.${value}`} value={value}>{name}</option>
             ))}
           </Select>
-        </FormControl>
+        </>
+      )
+    } else if (filter.type === 'multi') {
+      input = (
+          <MSelect
+            isMulti
+            options={filter.options.map(opt => ({ ...opt, label: opt.name }))}
+            variant='filled'
+            useBasicStyles
+            onChange={value => handleFilterChange(value, filter.field)}
+          />
+      )
+    } else {
+      input = (
+          <Input
+            w='full'
+            variant='normal'
+            type={filter.type}
+            placeholder={filter.placeholder ?? ''}
+            onChange={e => handleFilterChange(e, filter.field)}
+          />
       )
     }
     return (
       <FormControl key={filter.field} mb={4}>
         <FormLabel ml={2} mb={1} fontSize='sm'>{filter.name}</FormLabel>
-        <Input
-          w='full'
-          variant='normal'
-          type={filter.type}
-          placeholder={filter.placeholder ?? ''}
-          onChange={e => handleFilterChange(e, filter.field)}
-        />
+        {input}
       </FormControl>
     )
   })
