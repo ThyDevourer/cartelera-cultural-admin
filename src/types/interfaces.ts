@@ -121,6 +121,18 @@ export interface CategoryFilters {
   showDeleted: boolean
 }
 
+export interface UserFilters {
+  name: string
+  lastName: string
+  username: string
+  email: string
+  role: Role[]
+  active: boolean | 'all'
+  verified: boolean | 'all'
+  registeredAt: string
+  lastLogin: string
+}
+
 export interface Tool {
   title: string
   subtitle: string
@@ -136,7 +148,7 @@ export type FilterShape = {
   name: string
   field: string
   placeholder?: string
-  type: 'select'
+  type: 'select' | 'multi'
   options: {
     name: string
     value: any

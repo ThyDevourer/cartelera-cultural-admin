@@ -16,7 +16,8 @@ import { theme } from './styles/theme'
 import {
   FaCalendarAlt,
   FaListUl,
-  FaHome
+  FaHome,
+  FaUsers
 } from 'react-icons/fa'
 import Layout from './components/Layout/Layout'
 import { Page } from './types/interfaces'
@@ -28,6 +29,7 @@ const Register = lazy(() => import('./pages/Register'))
 const Verify = lazy(() => import('./pages/Verify'))
 const Events = lazy(() => import('./pages/Events'))
 const Categories = lazy(() => import('./pages/Categories'))
+const Users = lazy(() => import('./pages/Users'))
 
 const pages: Page[] = [
   {
@@ -43,6 +45,13 @@ const pages: Page[] = [
     href: '/categories',
     icon: <FaListUl />,
     element: <Categories />
+  },
+  {
+    title: 'Usuarios',
+    description: 'Gestionar cuentas de usuario',
+    href: '/users',
+    icon: <FaUsers />,
+    element: <Users />
   }
 ]
 
