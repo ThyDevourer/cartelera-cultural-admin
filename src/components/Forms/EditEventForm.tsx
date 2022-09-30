@@ -31,7 +31,7 @@ import dayjs from 'dayjs'
 import { Select } from 'chakra-react-select'
 import { FaCloudUploadAlt, FaSave } from 'react-icons/fa'
 import { truncate } from 'lodash'
-import { ICategory, IEvent, SubmitParams } from '../../types/interfaces'
+import { IEvent, SubmitParams } from '../../types/interfaces'
 import { useCategories } from '../../hooks/useCategories'
 
 type FormValues = Omit<IEvent, 'active' | 'flyer' | 'categories'> & {
@@ -44,9 +44,9 @@ interface Props {
     payload,
     image,
     action
-  }: SubmitParams<Omit<IEvent, 'active' | 'flyer'>>) => void
+  }: SubmitParams<Omit<IEvent, 'active' | 'flyer' | 'categories'> & { categories: string[] }>) => void
   onClose: () => void
-  event: IEvent
+  event: Omit<IEvent, 'categories'> & { categories: string[] }
 }
 
 const schema = object({

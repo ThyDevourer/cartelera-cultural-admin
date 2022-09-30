@@ -2,8 +2,7 @@ import { Request, Response } from '../types/interfaces'
 import { parseQueryParams } from '../utils/func'
 import { APIError } from '../utils/error'
 import { pickBy } from 'lodash'
-
-const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000'
+import { API_URL } from '../utils/constants'
 
 export const crud = async <TReq extends {}, TRes>(request: Request<TReq>): Promise<Response<TRes>> => {
   const { method, meta, payload, endpoint } = request

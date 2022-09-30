@@ -25,7 +25,9 @@ import {
   Menu,
   MenuButton,
   MenuList,
-  MenuItem
+  MenuItem,
+  HStack,
+  Tooltip
 } from '@chakra-ui/react'
 import {
   ColumnDef,
@@ -37,19 +39,23 @@ import {
   FaChevronDown,
   // FaChevronUp,
   FaChevronLeft,
-  FaChevronRight
+  FaChevronRight,
+  FaEdit,
+  FaTrash,
+  FaExternalLinkAlt
 } from 'react-icons/fa'
+import { useNavigate } from 'react-router-dom'
 import { truncate } from 'lodash'
 import useEvents from '../hooks/useEvents'
-import { IEvent } from '../types/interfaces'
+import { IEvent, ActionDef } from '../types/interfaces'
 import Table from '../components/Table/Table'
-import ActionButtons from '../components/ActionButton/ActionButton'
 import EditEventForm from '../components/Forms/EditEventForm'
 import AddEventForm from '../components/Forms/AddEventForm'
 import FilterCard from '../components/FilterCard/FilterCard'
 import HeaderButton from '../components/HeaderButton/HeaderButton'
 
 const Events = () => {
+  const navigate = useNavigate()
   const {
     status,
     rows,
@@ -111,6 +117,30 @@ const Events = () => {
       onDeleteClose()
     }
   }
+
+  const actions: ActionDef[] = [
+    {
+      name: 'edit',
+      label: 'Editar',
+      icon: <FaEdit />,
+      callback: id => onEdit(id),
+      disabled: false
+    },
+    {
+      name: 'delete',
+      label: 'Borrar',
+      icon: <FaTrash />,
+      callback: id => onDelete(id),
+      disabled: false
+    },
+    {
+      name: 'details',
+      label: 'Ver detalles',
+      icon: <FaExternalLinkAlt />,
+      callback: id => navigate(`/events/${id}`),
+      disabled: false
+    }
+  ]
 
   const columnHelper = createColumnHelper<IEvent>()
 
@@ -177,11 +207,22 @@ const Events = () => {
       id: 'actions',
       header: () => <span>Acciones</span>,
       cell: info => (
-        <ActionButtons
-          id={info.row.original._id}
-          onEdit={onEdit}
-          onDelete={onDelete}
-        />
+        <HStack>
+          {actions.map(action => (
+            <Tooltip
+              key={action.name}
+              label={action.label}
+            >
+              <Button
+                variant='alt'
+                onClick={() => action.callback(info.row.original._id)}
+                disabled={action.disabled}
+              >
+                {action.icon}
+              </Button>
+            </Tooltip>
+          ))}
+        </HStack>
       )
     }
   ]

@@ -8,20 +8,6 @@ export interface ICategory {
   active: boolean
 }
 
-export interface IEvent {
-  readonly _id: string
-  title: string
-  description: string
-  flyer: string
-  start: string
-  end?: string
-  ticketLink?: string
-  locationName?: string
-  published: boolean
-  categories: string[]
-  readonly createdBy: string
-}
-
 export interface IUser {
   readonly _id: string
   name: string
@@ -33,6 +19,20 @@ export interface IUser {
   verified: boolean
   registeredAt: string
   lastLogin: string
+}
+
+export interface IEvent {
+  readonly _id: string
+  title: string
+  description: string
+  flyer: string
+  start: string
+  end?: string
+  ticketLink?: string
+  locationName?: string
+  published: boolean
+  categories: ICategory[]
+  readonly createdBy: IUser | string
 }
 
 export interface LoginResponse {
