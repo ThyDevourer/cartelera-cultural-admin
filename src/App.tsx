@@ -30,6 +30,7 @@ const Verify = lazy(() => import('./pages/Verify'))
 const Events = lazy(() => import('./pages/Events'))
 const Categories = lazy(() => import('./pages/Categories'))
 const Users = lazy(() => import('./pages/Users'))
+const EventDetails = lazy(() => import('./pages/EventDetails'))
 
 const pages: Page[] = [
   {
@@ -84,6 +85,14 @@ const App = () => {
                     }
                   />
                 ))}
+                <Route
+                  path='/events/:id'
+                  element={
+                    <PrivateRoute>
+                      <EventDetails />
+                    </PrivateRoute>
+                  }
+                />
               </Route>
               <Route element={<Suspense />}>
                 <Route path='/login' element={<Login />} />

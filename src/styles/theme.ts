@@ -86,6 +86,15 @@ const Tag: ComponentStyleConfig = {
         px: 4,
         py: 3
       }
+    },
+    slim: {
+      container: {
+        borderRadius: 'xl',
+        fontWeight: 'regular',
+        bg: 'bg.alt',
+        px: 3,
+        py: 1
+      }
     }
   }
 }
