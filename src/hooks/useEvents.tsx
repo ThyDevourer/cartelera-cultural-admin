@@ -266,18 +266,31 @@ const useEvents = () => {
     if (image) {
       formData.append('image', image[0])
     }
-    const { data: imgUrl } = await crud<FormData, string>({
-      method: 'POST',
-      endpoint: 'upload/image',
-      payload: formData,
-      meta: {
-        token
+    try {
+      const { data: imgUrl } = await crud<FormData, string>({
+        method: 'POST',
+        endpoint: 'upload/image',
+        payload: formData,
+        meta: {
+          token
+        }
+      })
+      if (action === 'add') {
+        addEvent.mutate({ ...payload, flyer: imgUrl })
+      } else if (action === 'edit') {
+        updateEvent.mutate({ ...payload, flyer: imgUrl })
       }
-    })
-    if (action === 'add') {
-      addEvent.mutate({ ...payload, flyer: imgUrl })
-    } else if (action === 'edit') {
-      updateEvent.mutate({ ...payload, flyer: imgUrl })
+    } catch (err) {
+      if (err instanceof APIError) {
+        toast({
+          title: 'Error',
+          description: err.message,
+          status: 'error',
+          duration: 5000,
+          isClosable: true
+        })
+        logout()
+      }
     }
   }
 
@@ -364,3 +377,71 @@ const useEvents = () => {
 }
 
 export default useEvents
+
+export const useEvent = (id: string) => {
+  const toast = useToast()
+  const { token, logout } = useSessionStore(
+    state => ({ token: state.user.token, logout: state.logout }),
+    shallow
+  )
+  const client = useQueryClient()
+  const { status, data } = useQuery(['events', id], async () => {
+    const res = await crud<string, IEvent>({
+      method: 'GET',
+      endpoint: `events/${id}`,
+      meta: {
+        token
+      }
+    })
+    return res
+  })
+
+  const { mutate: togglePublished } = useMutation({
+    mutationFn: async () => {
+      const { published } = data?.data as IEvent
+      const res = await crud<{}, IEvent>({
+        method: 'PUT',
+        endpoint: `events/${id}`,
+        payload: { published: !published },
+        meta: {
+          token
+        }
+      })
+      return res
+    },
+    onSuccess: async event => {
+      await client.cancelQueries(['events'])
+      client.setQueryData(['events', id], event)
+      const description = event.data.published
+        ? 'El evento se ha publicado correctamente'
+        : 'El evento se ha convertido en borrador correctamente'
+      toast({
+        title: '¡Éxito!',
+        description,
+        status: 'success',
+        duration: 5000,
+        isClosable: true
+      })
+    },
+    onError: (err: Error) => {
+      toast({
+        title: 'Error',
+        description: err.message,
+        status: 'error',
+        duration: 5000,
+        isClosable: true
+      })
+      if (err instanceof APIError) {
+        if (err.status === 401) {
+          logout()
+        }
+      }
+    }
+  })
+
+  return {
+    status,
+    data,
+    togglePublished
+  }
+}
