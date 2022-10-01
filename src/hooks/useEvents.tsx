@@ -10,10 +10,12 @@ import {
   EventFilters,
   Response,
   FilterShape,
-  SubmitParams
+  AddEventPayload,
+  EditEventPayload
 } from '../types/interfaces'
 import { debounce } from 'lodash'
 import { APIError } from '../utils/error'
+import { getImageUrl as uploadImage } from '../utils/func'
 
 const useEvents = () => {
   const toast = useToast()
@@ -113,9 +115,9 @@ const useEvents = () => {
     return res
   })
 
-  const addEvent = useMutation({
-    mutationFn: async (event: IEvent) => {
-      const res = await crud<IEvent, IEvent>({
+  const { mutate: addEvent } = useMutation({
+    mutationFn: async (event: AddEventPayload) => {
+      const res = await crud<AddEventPayload, IEvent>({
         method: 'POST',
         endpoint: 'events',
         payload: event,
@@ -125,26 +127,7 @@ const useEvents = () => {
       })
       return res
     },
-    onMutate: async (event) => {
-      await client.cancelQueries(['events'])
-      const prevEvents = client.getQueryData<Response<IEvent[]>>(['events', { filters, limit, skip, sort }])
-      const prevTotalCount = client.getQueryData<Response<number>>(['events', 'total'])
-      if (prevEvents && prevTotalCount) {
-        client.setQueryData(['events', { filters, limit, skip, sort }], {
-          data: [...prevEvents.data, { ...event, _id: null }],
-          meta: {
-            ...prevEvents.meta,
-            count: prevEvents.meta.count + 1
-          }
-        })
-        client.setQueryData(['events', 'total'], {
-          ...prevTotalCount,
-          data: prevTotalCount.data + 1
-        })
-      }
-      return { prevEvents, prevTotalCount }
-    },
-    onError: (err: Error, _, context: any) => {
+    onError: (err: Error) => {
       toast({
         title: 'Error',
         description: err.message,
@@ -157,50 +140,48 @@ const useEvents = () => {
           logout()
         }
       }
-      if (context?.prevEvents && context?.prevTotalCount) {
-        client.setQueryData<IEvent[]>(['events', { filters, limit, skip, sort }], context.prevEvents)
-        client.setQueryData<Response<number>>(['events', 'total'], context.prevTotalCount)
-      }
     },
-    onSuccess: ({ data: event }) => {
-      const prevEvents = client.getQueryData<Response<IEvent[]>>(['events', { filters, limit, skip, sort }])
-      if (prevEvents) {
-        const newEvents = [...prevEvents.data]
-        newEvents[newEvents.findIndex(e => e._id === null)] = event
-        client.setQueryData<Response<IEvent[]>>(['events', { filters, limit, skip, sort }], {
-          ...prevEvents,
-          data: newEvents
-        })
-      }
+    onSuccess: () => {
+      client.invalidateQueries(['events'])
     }
   })
 
-  const updateEvent = useMutation({
-    mutationFn: async (event: IEvent) => {
-      const res = await crud<IEvent, IEvent>({
-        method: 'PUT',
-        endpoint: `events/${event._id}`,
-        payload: event,
-        meta: {
-          token
-        }
-      })
+  const { mutate: updateEvent } = useMutation({
+    mutationFn: async (event: EditEventPayload) => {
+      const res = await crud<
+        EditEventPayload,
+        Omit<IEvent, 'categories'> & { categories: ICategory[] }
+        >({
+          method: 'PUT',
+          endpoint: `events/${event._id}`,
+          payload: event,
+          meta: {
+            token
+          }
+        })
       return res
     },
-    onMutate: async (event) => {
-      await client.cancelQueries(['events'])
-      const prevEvents = client.getQueryData<Response<IEvent[]>>(['events', { filters, limit, skip, sort }])
+    onSuccess: ({ data: event }) => {
+      const prevEvents = client.getQueryData<Response<IEvent[]>>(['events', {
+        filters,
+        limit,
+        skip,
+        sort
+      }])
       if (prevEvents) {
         const newEvents = [...prevEvents.data]
-        newEvents[newEvents.findIndex(e => e._id === event._id)] = event
+        newEvents[newEvents.findIndex(e => e._id === event._id)] = {
+          ...event,
+          categories: event.categories.map(category => category._id)
+        }
         client.setQueryData(['events', { filters, limit, skip, sort }], {
           ...prevEvents,
           data: newEvents
         })
+        client.setQueryData(['events', event._id], event)
       }
-      return { prevEvents }
     },
-    onError: (err: Error, _, context: any) => {
+    onError: (err: Error) => {
       toast({
         title: 'Error',
         description: err.message,
@@ -212,9 +193,6 @@ const useEvents = () => {
         if (err.status === 401) {
           logout()
         }
-      }
-      if (context?.prevEvents) {
-        client.setQueryData<IEvent[]>(['events', { filters, limit, skip, sort }], context.prevEvents)
       }
     }
   })
@@ -261,39 +239,6 @@ const useEvents = () => {
       }
     }
   })
-
-  const eventSubmit = async ({ payload, image, action }: SubmitParams<Omit<IEvent, 'flyer'>>) => {
-    const formData = new FormData()
-    if (image) {
-      formData.append('image', image[0])
-    }
-    try {
-      const { data: imgUrl } = await crud<FormData, string>({
-        method: 'POST',
-        endpoint: 'upload/image',
-        payload: formData,
-        meta: {
-          token
-        }
-      })
-      if (action === 'add') {
-        addEvent.mutate({ ...payload, flyer: imgUrl })
-      } else if (action === 'edit') {
-        updateEvent.mutate({ ...payload, flyer: imgUrl })
-      }
-    } catch (err) {
-      if (err instanceof APIError) {
-        toast({
-          title: 'Error',
-          description: err.message,
-          status: 'error',
-          duration: 5000,
-          isClosable: true
-        })
-        logout()
-      }
-    }
-  }
 
   const rows = data?.data ?? []
   const count = totalData?.data ?? 0
@@ -350,6 +295,29 @@ const useEvents = () => {
     })
   }
 
+  const getImageUrl = async (image: FileList) => {
+    try {
+      const url = await uploadImage(image, token)
+      return url
+    } catch (err) {
+      if (err instanceof Error) {
+        toast({
+          title: 'Error',
+          description: err.message,
+          status: 'error',
+          duration: 5000,
+          isClosable: true
+        })
+        if (err instanceof APIError) {
+          if (err.status === 401) {
+            logout()
+          }
+        }
+      }
+      return ''
+    }
+  }
+
   return {
     status,
     rows,
@@ -365,14 +333,14 @@ const useEvents = () => {
     count,
     handleFilterChange,
     filterInputs,
-    eventSubmit,
     page,
     maxPage,
     setPage,
     lowerShown,
     upperShown,
     sort,
-    toggleSort
+    toggleSort,
+    getImageUrl
   }
 }
 
@@ -399,7 +367,7 @@ export const useEvent = (id: string) => {
   const { mutate: togglePublished } = useMutation({
     mutationFn: async () => {
       const { published } = data?.data as IEvent
-      const res = await crud<{}, IEvent>({
+      const res = await crud<{ published: boolean }, IEvent>({
         method: 'PUT',
         endpoint: `events/${id}`,
         payload: { published: !published },
