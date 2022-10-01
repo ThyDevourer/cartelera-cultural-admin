@@ -1,6 +1,6 @@
 import shallow from 'zustand/shallow'
 import { useToast } from '@chakra-ui/react'
-import { useState, useCallback, ChangeEvent, useEffect } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { crud } from '../services/crud.service'
 import { useSessionStore } from './useSessionStore'
@@ -297,8 +297,7 @@ const useEvents = () => {
   const rows = data?.data ?? []
   const count = totalData?.data ?? 0
 
-  const handleFilterChange = useCallback(debounce((event: ChangeEvent<any>, type: string) => {
-    const value = event.target.value
+  const handleFilterChange = useCallback(debounce((value: any, type: string) => {
     switch (type) {
       case 'title':
         setFilters({ ...filters, title: value })

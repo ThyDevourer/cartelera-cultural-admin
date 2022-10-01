@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, ChangeEvent } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { debounce } from 'lodash'
 import { useToast } from '@chakra-ui/react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -40,8 +40,7 @@ export const useCategories = () => {
       ]
     }
   ]
-  const handleFilterChange = useCallback(debounce((event: ChangeEvent<any>, type: string) => {
-    const value = event.target.value
+  const handleFilterChange = useCallback(debounce((value: any, type: string) => {
     switch (type) {
       case 'name':
         setFilters(prev => ({ ...prev, name: value }))

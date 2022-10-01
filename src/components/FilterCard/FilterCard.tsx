@@ -1,4 +1,3 @@
-import { ChangeEvent } from 'react'
 import {
   Flex,
   Input,
@@ -16,7 +15,7 @@ import { FilterShape } from '../../types/interfaces'
 
 interface Props {
   filters: FilterShape[]
-  handleFilterChange: (event: ChangeEvent | readonly Record<string, string>[], type: string) => void
+  handleFilterChange: (value: any, type: string) => void
 }
 
 const FilterCard = ({ filters, handleFilterChange }: Props) => {
@@ -28,7 +27,7 @@ const FilterCard = ({ filters, handleFilterChange }: Props) => {
           <Select
             w='full'
             variant='normal'
-            onChange={e => handleFilterChange(e, filter.field)}
+            onChange={e => handleFilterChange(e.target.value, filter.field)}
           >
             {filter.options.map(({ name, value }) => (
               <option key={`${name}.${value}`} value={value}>{name}</option>
@@ -53,7 +52,7 @@ const FilterCard = ({ filters, handleFilterChange }: Props) => {
             variant='normal'
             type={filter.type}
             placeholder={filter.placeholder ?? ''}
-            onChange={e => handleFilterChange(e, filter.field)}
+            onChange={e => handleFilterChange(e.target.value, filter.field)}
           />
       )
     }
