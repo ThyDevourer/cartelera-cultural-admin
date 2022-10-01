@@ -44,7 +44,7 @@ interface Props {
     payload,
     image,
     action
-  }: SubmitParams<Omit<IEvent, 'active' | 'flyer' | 'categories'> & { categories: string[] }>) => void
+  }: SubmitParams<Omit<IEvent, 'active' | 'flyer'>>) => void
   onClose: () => void
 }
 

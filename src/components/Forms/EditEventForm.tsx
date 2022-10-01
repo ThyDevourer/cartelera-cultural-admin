@@ -46,7 +46,7 @@ interface Props {
     action
   }: SubmitParams<Omit<IEvent, 'active' | 'flyer' | 'categories'> & { categories: string[] }>) => void
   onClose: () => void
-  event: Omit<IEvent, 'categories'> & { categories: string[] }
+  event: IEvent
 }
 
 const schema = object({

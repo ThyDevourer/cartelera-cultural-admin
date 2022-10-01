@@ -6,6 +6,7 @@ import { crud } from '../services/crud.service'
 import { useSessionStore } from './useSessionStore'
 import {
   IEvent,
+  ICategory,
   EventFilters,
   Response,
   FilterShape,
@@ -385,7 +386,7 @@ export const useEvent = (id: string) => {
   )
   const client = useQueryClient()
   const { status, data } = useQuery(['events', id], async () => {
-    const res = await crud<string, IEvent>({
+    const res = await crud<string, IEvent & { categories: ICategory[] }>({
       method: 'GET',
       endpoint: `events/${id}`,
       meta: {

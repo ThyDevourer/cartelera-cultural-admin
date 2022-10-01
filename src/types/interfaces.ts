@@ -31,7 +31,7 @@ export interface IEvent {
   ticketLink?: string
   locationName?: string
   published: boolean
-  categories: ICategory[]
+  categories: ICategory[] | string[]
   readonly createdBy: IUser | string
 }
 
