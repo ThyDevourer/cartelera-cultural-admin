@@ -31,21 +31,18 @@ import dayjs from 'dayjs'
 import { Select } from 'chakra-react-select'
 import { FaCloudUploadAlt, FaSave } from 'react-icons/fa'
 import { truncate } from 'lodash'
-import { IEvent, SubmitParams } from '../../types/interfaces'
+import { EditEventPayload, IEvent } from '../../types/interfaces'
 import { useCategories } from '../../hooks/useCategories'
 
-type FormValues = Omit<IEvent, 'active' | 'flyer' | 'categories'> & {
+type FormValues = Omit<IEvent, '_id' | 'active' | 'flyer' | 'categories'> & {
   flyer: FileList
   categories: { label: string, value: string }[]
 }
 
 interface Props {
-  onSubmit: ({
-    payload,
-    image,
-    action
-  }: SubmitParams<Omit<IEvent, 'active' | 'flyer' | 'categories'> & { categories: string[] }>) => void
+  onSubmit: (event: EditEventPayload) => void
   onClose: () => void
+  getImageUrl: (image: FileList) => Promise<string>
   event: IEvent
 }
 
@@ -69,7 +66,7 @@ const schema = object({
   })))
 })
 
-const EditEventForm = ({ event, onClose, onSubmit }: Props) => {
+const EditEventForm = ({ event, onClose, onSubmit, getImageUrl }: Props) => {
   const {
     title,
     description,
@@ -109,14 +106,12 @@ const EditEventForm = ({ event, onClose, onSubmit }: Props) => {
 
   const submitHandler: SubmitHandler<FormValues> = async (data) => {
     const { flyer, categories: newCategories, ...rest } = data
+    const imgUrl = await getImageUrl(flyer)
     onSubmit({
-      payload: {
-        ...rest,
-        _id: event._id,
-        categories: newCategories.map(category => category.value)
-      },
-      image: flyer,
-      action: 'edit'
+      ...rest,
+      _id: event._id,
+      categories: newCategories.map(category => category.value),
+      flyer: imgUrl
     })
     onClose()
   }

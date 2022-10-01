@@ -45,7 +45,7 @@ import {
   FaExternalLinkAlt
 } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
-import { truncate } from 'lodash'
+import { get, truncate } from 'lodash'
 import useEvents from '../hooks/useEvents'
 import { IEvent, ActionDef } from '../types/interfaces'
 import Table from '../components/Table/Table'
@@ -66,13 +66,15 @@ const Events = () => {
     page,
     maxPage,
     setPage,
+    addEvent,
+    updateEvent,
     deleteEvent,
     count,
-    eventSubmit,
     lowerShown,
     upperShown,
     sort,
-    toggleSort
+    toggleSort,
+    getImageUrl
   } = useEvents()
   const [modalContent, setModalContent] = useState<ReactElement | null>(null)
   const [modalTitle, setModalTitle] = useState('')
@@ -95,7 +97,8 @@ const Events = () => {
         <EditEventForm
           event={event}
           onClose={onModalClose}
-          onSubmit={eventSubmit}
+          onSubmit={updateEvent}
+          getImageUrl={getImageUrl}
         />
       )
       setModalTitle('Editar evento')
@@ -234,7 +237,8 @@ const Events = () => {
     setModalContent(
       <AddEventForm
         onClose={onModalClose}
-        onSubmit={eventSubmit}
+        onSubmit={addEvent}
+        getImageUrl={getImageUrl}
       />
     )
     onModalOpen()

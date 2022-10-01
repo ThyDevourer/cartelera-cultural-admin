@@ -35,6 +35,9 @@ export interface IEvent {
   readonly createdBy: IUser | string
 }
 
+export type AddEventPayload = Omit<IEvent, '_id' | 'createdBy'>
+export type EditEventPayload = AddEventPayload & { _id: string }
+
 export interface LoginResponse {
   token: string
 }
