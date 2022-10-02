@@ -40,7 +40,12 @@ const Layout = ({ pages }: Props) => {
           marginInline='auto'
           h='full'
         >
-          <Topbar onOpen={onOpen} isOpen={isOpen} onClose={onClose} />
+          <Topbar
+            onOpen={onOpen}
+            isOpen={isOpen}
+            onClose={onClose}
+            pages={pages}
+          />
           <Suspense hasLayout>
             <Outlet />
           </Suspense>

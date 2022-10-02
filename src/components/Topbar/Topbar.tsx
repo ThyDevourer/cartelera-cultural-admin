@@ -7,14 +7,17 @@ import {
   useLocation
 } from 'react-router-dom'
 import { IoMdMenu, IoMdArrowBack, IoMdClose } from 'react-icons/io'
+import Breadcrumbs from '../Breadcrumbs/Breadcrumbs'
+import type { Page } from '../../types/interfaces'
 
 interface Props {
   isOpen: boolean
   onOpen: () => void
   onClose: () => void
+  pages: Page[]
 }
 
-const Topbar = ({ isOpen, onOpen, onClose }: Props) => {
+const Topbar = ({ isOpen, onOpen, onClose, pages }: Props) => {
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -38,6 +41,7 @@ const Topbar = ({ isOpen, onOpen, onClose }: Props) => {
         >
           <IoMdArrowBack />
         </Button>
+        <Breadcrumbs pathname={location.pathname} pages={pages} />
       </HStack>
     </HStack>
   )
