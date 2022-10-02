@@ -6,6 +6,7 @@ import {
   HStack,
   Center
 } from '@chakra-ui/react'
+import { FaQuestionCircle } from 'react-icons/fa'
 import { Page } from '../../types/interfaces'
 
 interface Props {
@@ -30,7 +31,9 @@ const SectionCard = ({ page }: Props) => {
       cursor='pointer'
     >
       <HStack>
-        <Center py={2} pl={2} pr={4}>{cloneElement(page.icon, { size: 32 })}</Center>
+        <Center py={2} pl={2} pr={4}>
+          {cloneElement(page.icon ?? <FaQuestionCircle />, { size: 32 })}
+        </Center>
         <Box>
           <Text fontSize='xl' fontWeight='600'>{page.title}</Text>
           {page.description && <Text>{page.description}</Text>}

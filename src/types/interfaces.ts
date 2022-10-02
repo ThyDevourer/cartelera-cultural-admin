@@ -94,7 +94,6 @@ export interface Page {
   href: string
   icon?: ReactElement
   element: ReactElement
-  children?: Page[]
   private: boolean
   onMenu: boolean
 }
