@@ -89,11 +89,14 @@ export type Request<T = void> = {
 }
 
 export interface Page {
-  title: string
+  title?: string
   description?: string
   href: string
-  icon: ReactElement
+  icon?: ReactElement
   element: ReactElement
+  children?: Page[]
+  private: boolean
+  onMenu: boolean
 }
 
 export interface Action {

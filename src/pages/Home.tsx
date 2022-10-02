@@ -18,7 +18,7 @@ const Home = ({ pages }: Props) => {
       <Heading as='h1' mb={4}>Hola {user.username}!</Heading>
       <VStack spacing={4}>
         {pages
-          .filter(page => page.href !== '/')
+          .filter(page => page.onMenu && page.href !== '/')
           .map(page => (
             <SectionCard key={page.href} page={page} />
           ))}

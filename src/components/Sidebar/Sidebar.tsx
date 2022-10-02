@@ -30,8 +30,9 @@ const Menu = ({ pages, isOpen, onClose }: Props) => {
 
   const menuContent = (
     <VStack w={isOpen ? isDesktop ? '20ch' : 'full' : 'initial'}>
-      {pages.map(page => (
-        <Tooltip
+      {pages.filter(page => page.onMenu).map(page => {
+        const isActivePage = (pathname.split('/').at(-1) || '/') === page.href
+        return <Tooltip
           key={page.href}
           label={page.title}
           aria-label={page.title}
@@ -43,8 +44,8 @@ const Menu = ({ pages, isOpen, onClose }: Props) => {
           <Button
             w='full'
             variant='transparent'
-            bgColor={pathname === page.href ? 'bg.main' : 'brand.100'}
-            color={pathname === page.href ? 'fg.main' : 'bg.main'}
+            bgColor={isActivePage ? 'bg.main' : 'brand.100'}
+            color={isActivePage ? 'fg.main' : 'bg.main'}
             borderRightRadius={isDesktop ? 0 : 'xl'}
             borderLeftRadius='xl'
             onClick={() => navigate(page.href)}
@@ -55,7 +56,7 @@ const Menu = ({ pages, isOpen, onClose }: Props) => {
             </HStack>
           </Button>
         </Tooltip>
-      ))}
+      })}
     </VStack>
   )
 
