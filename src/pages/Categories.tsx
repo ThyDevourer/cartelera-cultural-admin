@@ -1,7 +1,6 @@
 import { ReactElement, useState, useRef } from 'react'
 import {
   Flex,
-  Heading,
   Tag,
   TagLabel,
   Text,
@@ -180,7 +179,6 @@ const Categories = () => {
 
   return (
     <>
-      <Heading mb={5}>Categorías</Heading>
       <Flex
         my={4}
         direction='row'

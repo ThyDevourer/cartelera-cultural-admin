@@ -1,7 +1,6 @@
 import { useState, useRef, ReactElement } from 'react'
 import {
   Flex,
-  Heading,
   Text,
   Portal,
   useDisclosure,
@@ -45,7 +44,7 @@ import {
   FaExternalLinkAlt
 } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
-import { get, truncate } from 'lodash'
+import { truncate } from 'lodash'
 import useEvents from '../hooks/useEvents'
 import { IEvent, ActionDef } from '../types/interfaces'
 import Table from '../components/Table/Table'
@@ -246,7 +245,6 @@ const Events = () => {
 
   return (
     <>
-      <Heading mb={5}>Eventos</Heading>
       <Flex
         my={4}
         direction='row'
