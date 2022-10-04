@@ -69,7 +69,7 @@ const Register = () => {
 
   return (
     <Flex h='100vh' align='center' justify='center'>
-      <Flex p={12} direction='column' background='bg.alt' rounded={6}>
+      <Flex p={12} direction='column' background='bg.alt' borderRadius='xl'>
         <Heading pb={6}>Regístrate</Heading>
         <chakra.form
           onSubmit={handleSubmit(onSubmit)}

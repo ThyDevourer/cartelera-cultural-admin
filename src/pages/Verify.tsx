@@ -63,7 +63,7 @@ const Verify = () => {
 
   return (
     <Flex h='100vh' align='center' justify='center'>
-      <Flex p={12} direction='column' background='gray.700' rounded={6}>
+      <Flex p={12} direction='column' background='bg.alt' borderRadius='xl'>
         <Heading pb={6}>Verifica tu cuenta</Heading>
         <chakra.form
           onSubmit={handleSubmit(onSubmit)}
@@ -74,11 +74,11 @@ const Verify = () => {
               {...register('code', { required: true })}
               placeholder='Código de verificación'
               type='text'
-              variant='filled'
+              variant='normal'
               mb={6}
             />
           </FormControl>
-          <Button w='full' colorScheme='purple' type='submit'>Verificar cuenta</Button>
+          <Button w='full' variant='brand' type='submit'>Verificar cuenta</Button>
         </chakra.form>
       </Flex>
     </Flex>
