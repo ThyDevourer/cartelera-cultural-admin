@@ -1,5 +1,6 @@
 import {
   Button,
+  IconButton,
   HStack,
   Icon,
   Menu,
@@ -58,8 +59,15 @@ const Topbar = ({
       </HStack>
       <HStack>
         <Menu>
-          <MenuButton as={Button} variant='alt' p={0} m={0} rounded='full'>
-            <Icon as={FaUserCircle} m={0} p={0} />
+          <MenuButton
+            as={IconButton}
+            variant='alt'
+            rounded='full'
+            h='2.5em'
+            w='2.5em'
+            alignItems='center'
+            icon={<FaUserCircle size={28} />}
+          >
           </MenuButton>
           <MenuList>
             <MenuItem
