@@ -1,19 +1,17 @@
-import { useEffect } from 'react'
 import {
   Flex,
   Heading,
   FormControl,
   Input,
   Button,
-  useToast,
   Link,
   Text,
   chakra
 } from '@chakra-ui/react'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { useNavigate, Link as RouterLink } from 'react-router-dom'
-import { useSessionStore } from '../hooks/useSessionStore'
-import { LoginPayload } from '../types/interfaces'
+import { ILogin } from '../types/interfaces'
+import { useAuth } from '../hooks/useAuth'
 
 const Login = () => {
   const {
@@ -24,37 +22,21 @@ const Login = () => {
       errors,
       touchedFields
     }
-  } = useForm<LoginPayload>({
+  } = useForm<ILogin>({
     defaultValues: {
       username: '',
       password: ''
     }
   })
-  const login = useSessionStore(state => state.login)
-  const { error, setError } = useSessionStore(state => ({
-    error: state.error,
-    setError: state.setError
-  }))
-  const toast = useToast()
+  const { login, loginIsLoading: isLoading } = useAuth()
   const navigate = useNavigate()
 
-  useEffect(() => {
-    if (error) {
-      toast({
-        title: error,
-        status: 'error',
-        duration: 5000,
-        isClosable: true
-      })
-    }
-  }, [error])
-
-  const onSubmit: SubmitHandler<LoginPayload> = async (data) => {
+  const onSubmit: SubmitHandler<ILogin> = async (data) => {
     try {
-      await login(data.username, data.password)
+      const { username, password } = data
+      await login({ username, password })
       navigate('/', { replace: true })
     } catch (e: any) {
-      setError(e)
       reset()
     }
   }
@@ -88,6 +70,7 @@ const Login = () => {
             variant='brand'
             type='submit'
             w='full'
+            isLoading={isLoading}
           >
             Iniciar sesión
           </Button>

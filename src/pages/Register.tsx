@@ -1,17 +1,15 @@
-import { useEffect } from 'react'
 import {
   Flex,
   Heading,
   FormControl,
   Input,
   Button,
-  useToast,
   chakra
 } from '@chakra-ui/react'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
-import { useSessionStore } from '../hooks/useSessionStore'
-import { SignupPayload } from '../types/interfaces'
+import { useAuth } from '../hooks/useAuth'
+import { ISignup } from '../types/interfaces'
 
 const Register = () => {
   const {
@@ -22,7 +20,7 @@ const Register = () => {
       errors,
       touchedFields
     }
-  } = useForm<SignupPayload>({
+  } = useForm<ISignup>({
     defaultValues: {
       name: '',
       lastName: '',
@@ -31,38 +29,14 @@ const Register = () => {
       password: ''
     }
   })
-  const signup = useSessionStore(state => state.signup)
-  const { error, setError } = useSessionStore(state => ({
-    error: state.error,
-    setError: state.setError
-  }))
-  const toast = useToast()
+  const { signup, signupIsLoading: isLoading } = useAuth()
   const navigate = useNavigate()
 
-  useEffect(() => {
-    if (error) {
-      toast({
-        title: error,
-        status: 'error',
-        duration: 5000,
-        isClosable: true
-      })
-    }
-  }, [error])
-
-  const onSubmit: SubmitHandler<SignupPayload> = async (data) => {
+  const onSubmit: SubmitHandler<ISignup> = async (data) => {
     try {
       await signup(data)
-      toast({
-        title: 'Te has registrado con éxito!',
-        description: `Se ha enviado un código de verificación a ${data.email}`,
-        status: 'success',
-        duration: 5000,
-        isClosable: true
-      })
       navigate('/verify', { replace: true })
-    } catch (e: any) {
-      setError(e)
+    } catch (e) {
       reset()
     }
   }
@@ -116,7 +90,14 @@ const Register = () => {
               mb={6}
             />
           </FormControl>
-          <Button w='full' variant='brand' type='submit'>Crear cuenta</Button>
+          <Button
+            w='full'
+            variant='brand'
+            type='submit'
+            isLoading={isLoading}
+          >
+            Crear cuenta
+          </Button>
         </chakra.form>
       </Flex>
     </Flex>

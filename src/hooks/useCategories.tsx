@@ -3,8 +3,7 @@ import { debounce } from 'lodash'
 import { useToast } from '@chakra-ui/react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { crud } from '../services/crud.service'
-import { useSessionStore } from './useSessionStore'
-import shallow from 'zustand/shallow'
+import { useAuth } from './useAuth'
 import {
   CategoryFilters,
   ICategory,
@@ -15,10 +14,8 @@ import { APIError } from '../utils/error'
 
 export const useCategories = () => {
   const toast = useToast()
-  const { token, logout } = useSessionStore(
-    state => ({ token: state.user.token, logout: state.logout }),
-    shallow
-  )
+  const { logout, user } = useAuth()
+  const token = user?.token as string
   const client = useQueryClient()
   const [filters, setFilters] = useState<CategoryFilters>({
     name: '',

@@ -1,4 +1,4 @@
-import { useSessionStore } from '../hooks/useSessionStore'
+import { useAuth } from '../hooks/useAuth'
 import {
   Heading,
   VStack
@@ -11,11 +11,11 @@ interface Props {
 }
 
 const Home = ({ pages }: Props) => {
-  const user = useSessionStore(state => state.user)
+  const { user } = useAuth()
 
   return (
     <>
-      <Heading as='h1' mb={4}>Hola {user.username}!</Heading>
+      <Heading as='h1' mb={4}>Hola {user?.username}!</Heading>
       <VStack spacing={4}>
         {pages
           .filter(page => page.onMenu && page.href !== '/')

@@ -1,9 +1,8 @@
-import shallow from 'zustand/shallow'
 import { useToast } from '@chakra-ui/react'
 import { useState, useCallback, useEffect } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { crud } from '../services/crud.service'
-import { useSessionStore } from './useSessionStore'
+import { useAuth } from './useAuth'
 import {
   IEvent,
   ICategory,
@@ -20,10 +19,8 @@ import { getImageUrl as uploadImage } from '../utils/func'
 const useEvents = () => {
   const toast = useToast()
   const client = useQueryClient()
-  const { token, logout } = useSessionStore(
-    state => ({ token: state.user.token, logout: state.logout }),
-    shallow
-  )
+  const { user, logout } = useAuth()
+  const token = user?.token as string
   const [filters, setFilters] = useState<EventFilters>({
     title: '',
     description: '',
@@ -348,10 +345,8 @@ export default useEvents
 
 export const useEvent = (id: string) => {
   const toast = useToast()
-  const { token, logout } = useSessionStore(
-    state => ({ token: state.user.token, logout: state.logout }),
-    shallow
-  )
+  const { user, logout } = useAuth()
+  const token = user?.token as string
   const client = useQueryClient()
   const { status, data } = useQuery(['events', id], async () => {
     const res = await crud<string, IEvent & { categories: ICategory[] }>({

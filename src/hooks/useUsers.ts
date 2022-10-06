@@ -1,20 +1,17 @@
 import { useState, useCallback, ChangeEvent, useEffect } from 'react'
 import { useToast } from '@chakra-ui/react'
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
-import shallow from 'zustand/shallow'
 import { capitalize, debounce } from 'lodash'
+import { useAuth } from './useAuth'
 import { crud } from '../services/crud.service'
-import { useSessionStore } from './useSessionStore'
 import { IUser, Response, FilterShape, UserFilters } from '../types/interfaces'
 import { roles } from '../utils/constants'
 import { APIError } from '../utils/error'
 
 export const useUsers = () => {
   const toast = useToast()
-  const { token, logout } = useSessionStore(
-    state => ({ token: state.user.token, logout: state.logout }),
-    shallow
-  )
+  const { user, logout } = useAuth()
+  const token = user?.token as string
 
   const [filters, setFilters] = useState<UserFilters>({
     name: '',

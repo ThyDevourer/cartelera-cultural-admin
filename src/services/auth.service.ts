@@ -1,16 +1,18 @@
 import { encode } from 'js-base64'
 import {
-  LoginResponse,
-  LoginPayload,
-  SignupPayload,
+  ILogin,
+  ISignup,
   IUser,
-  SuccessResponse,
-  VerifyPayload
+  IVerify,
+  Response
 } from '../types/interfaces'
+import { APIError } from '../utils/error'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 
-export const login = async ({ username, password }: LoginPayload) => {
+// TODO: MAKE THIS INTO A SINGLE SERVICE
+
+export const login = async ({ username, password }: ILogin) => {
   const auth = encode(`${username}:${password}`)
   const res = await fetch(`${API_URL}/auth/login`, {
     method: 'POST',
@@ -18,12 +20,14 @@ export const login = async ({ username, password }: LoginPayload) => {
       Authorization: `Basic ${auth}`
     }
   })
-  if (!res.ok) throw new Error('Error al iniciar sesión')
-  const data: LoginResponse = await res.json()
+  const data: Response<string> = await res.json()
+  if (!res.ok) {
+    throw new APIError(data.meta.message, res.status)
+  }
   return data
 }
 
-export const signup = async (payload: SignupPayload) => {
+export const signup = async (payload: ISignup) => {
   const res = await fetch(`${API_URL}/auth/signup`, {
     method: 'POST',
     headers: {
@@ -31,12 +35,12 @@ export const signup = async (payload: SignupPayload) => {
     },
     body: JSON.stringify(payload)
   })
-  if (!res.ok) throw new Error('Error al registrar usuario')
-  const data: IUser = await res.json()
+  const data: Response<IUser> = await res.json()
+  if (!res.ok) throw new APIError(data.meta.message, res.status)
   return data
 }
 
-export const verify = async (payload: VerifyPayload) => {
+export const verify = async (payload: IVerify) => {
   const res = await fetch(`${API_URL}/auth/verify`, {
     method: 'POST',
     headers: {
@@ -44,8 +48,8 @@ export const verify = async (payload: VerifyPayload) => {
     },
     body: JSON.stringify(payload)
   })
-  if (!res.ok) throw new Error('Error al verificar cuenta')
-  const data: IUser = await res.json()
+  const data: Response<IUser> = await res.json()
+  if (!res.ok) throw new APIError(data.meta.message, res.status)
   return data
 }
 
@@ -57,9 +61,7 @@ export const resendVerification = async (_id: string) => {
     },
     body: JSON.stringify({ _id })
   })
-  if (!res.ok) {
-    throw new Error(`Error al enviar correo de verificación: ${res.body}`)
-  }
-  const data: SuccessResponse = await res.json()
+  const data: Response<null> = await res.json()
+  if (!res.ok) throw new APIError(data.meta.message, res.status)
   return data
 }

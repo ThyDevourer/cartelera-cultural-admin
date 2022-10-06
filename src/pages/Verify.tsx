@@ -1,17 +1,18 @@
-import { useEffect } from 'react'
 import {
   Flex,
   Heading,
   FormControl,
   Input,
   Button,
-  useToast,
   chakra
 } from '@chakra-ui/react'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
-import { useSessionStore } from '../hooks/useSessionStore'
-import { VerifyPayload } from '../types/interfaces'
+import { useAuth } from '../hooks/useAuth'
+
+interface FormValues {
+  code: string
+}
 
 const Verify = () => {
   const {
@@ -21,42 +22,25 @@ const Verify = () => {
     formState: {
       errors, touchedFields
     }
-  } = useForm<VerifyPayload>({
+  } = useForm<FormValues>({
     defaultValues: {
       code: ''
     }
   })
-  const verify = useSessionStore(state => state.verify)
-  const { error, setError } = useSessionStore(state => ({
-    error: state.error,
-    setError: state.setError
-  }))
-  const toast = useToast()
+  const {
+    user,
+    verify,
+    verifyIsLoading: isLoading,
+    resendVerification,
+    resendIsLoading
+  } = useAuth()
   const navigate = useNavigate()
 
-  useEffect(() => {
-    if (error) {
-      toast({
-        title: error,
-        status: 'error',
-        duration: 5000,
-        isClosable: true
-      })
-    }
-  }, [error])
-
-  const onSubmit: SubmitHandler<VerifyPayload> = async (data) => {
+  const onSubmit: SubmitHandler<FormValues> = async (data) => {
     try {
-      await verify(data.code)
-      toast({
-        title: '¡Tu cuenta se ha verificado con éxito!',
-        status: 'success',
-        duration: 5000,
-        isClosable: true
-      })
+      await verify({ userId: user?._id as string, ...data })
       navigate('/', { replace: true })
     } catch (e: any) {
-      setError(e)
       reset()
     }
   }
@@ -78,8 +62,22 @@ const Verify = () => {
               mb={6}
             />
           </FormControl>
-          <Button w='full' variant='brand' type='submit'>Verificar cuenta</Button>
+          <Button
+            w='full'
+            variant='brand'
+            type='submit'
+            isLoading={isLoading}
+          >
+            Verificar cuenta
+          </Button>
         </chakra.form>
+        <Button
+          variant='link'
+          onClick={() => resendVerification(user?._id as string)}
+          isLoading={resendIsLoading}
+        >
+          Enviar un nuevo código
+        </Button>
       </Flex>
     </Flex>
   )

@@ -38,16 +38,7 @@ export interface IEvent {
 export type AddEventPayload = Omit<IEvent, '_id' | 'createdBy'>
 export type EditEventPayload = AddEventPayload & { _id: string }
 
-export interface LoginResponse {
-  token: string
-}
-
-export interface LoginPayload {
-  username: string
-  password: string
-}
-
-export interface SignupPayload {
+export interface ISignup {
   name: string
   lastName: string
   username: string
@@ -55,13 +46,7 @@ export interface SignupPayload {
   password: string
 }
 
-export interface SuccessResponse {
-  success: boolean
-  title: string
-  description: string
-}
-
-export interface VerifyPayload {
+export interface IVerify {
   code: string
   userId: string
 }
@@ -172,4 +157,9 @@ export interface SubmitParams<TPayload> {
   payload: TPayload
   image?: FileList
   action: 'add' | 'edit'
+}
+
+export interface ILogin {
+  username: string
+  password: string
 }

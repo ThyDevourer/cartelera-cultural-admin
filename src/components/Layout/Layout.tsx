@@ -9,6 +9,7 @@ import { Page } from '../../types/interfaces'
 import Sidebar from '../Sidebar/Sidebar'
 import Topbar from '../Topbar/Topbar'
 import Suspense from '../Suspense/Suspense'
+import { useAuth } from '../../hooks/useAuth'
 
 interface Props {
   pages: Page[]
@@ -16,6 +17,7 @@ interface Props {
 
 const Layout = ({ pages }: Props) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const { logout } = useAuth()
 
   return (
     <Flex
@@ -45,6 +47,7 @@ const Layout = ({ pages }: Props) => {
             isOpen={isOpen}
             onClose={onClose}
             pages={pages}
+            onLogout={logout}
           />
           <Suspense hasLayout>
             <Outlet />
