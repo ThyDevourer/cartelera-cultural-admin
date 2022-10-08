@@ -1,16 +1,21 @@
+import { pickBy } from 'lodash'
 import { Request, Response } from '../types/interfaces'
 import { parseQueryParams } from '../utils/func'
 import { APIError } from '../utils/error'
-import { pickBy } from 'lodash'
 import { API_URL } from '../utils/constants'
+import { refreshToken } from '../services/auth.service'
 
-export const crud = async <TReq extends {}, TRes>(request: Request<TReq>): Promise<Response<TRes>> => {
+export const crud = async <TReq extends {}, TRes>(request: Request<TReq>, tokenUpdater?: (token: string) => void): Promise<Response<TRes>> => {
   const { method, meta, payload, endpoint } = request
   const headers: HeadersInit = {}
   if (meta?.token) {
     headers.Authorization = `Bearer ${meta.token}`
   }
-  const options: RequestInit = { method, headers }
+  const options: RequestInit = {
+    method,
+    headers,
+    credentials: 'include'
+  }
   if (payload) {
     if (payload instanceof FormData) {
       options.body = payload
@@ -30,10 +35,25 @@ export const crud = async <TReq extends {}, TRes>(request: Request<TReq>): Promi
   if (query) {
     query = `?${query}`
   }
-  const res = await fetch(`${API_URL}/${endpoint}${query}`, options)
+  const origRequest = () => fetch(`${API_URL}/${endpoint}${query}`, options)
+  const res = await origRequest()
   const data: Response<TRes> = await res.json()
   if (!res.ok) {
-    throw new APIError(data.meta.message, res.status)
+    if (data.meta.message.includes('expired')) {
+      const newToken = await refreshToken()
+      if (tokenUpdater) {
+        tokenUpdater(newToken.data)
+      }
+      headers.Authorization = `Bearer ${newToken.data}`
+      const newRes = await origRequest()
+      const newData: Response<TRes> = await newRes.json()
+      if (!newRes.ok) {
+        throw new APIError(newToken.meta.message, res.status)
+      }
+      return newData
+    } else {
+      throw new APIError(data.meta.message, res.status)
+    }
   }
   return data
 }

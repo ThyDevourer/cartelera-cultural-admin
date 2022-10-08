@@ -18,9 +18,22 @@ export const login = async ({ username, password }: ILogin) => {
     method: 'POST',
     headers: {
       Authorization: `Basic ${auth}`
-    }
+    },
+    credentials: 'include'
   })
   const data: Response<string> = await res.json()
+  if (!res.ok) {
+    throw new APIError(data.meta.message, res.status)
+  }
+  return data
+}
+
+export const logout = async () => {
+  const res = await fetch(`${API_URL}/auth/logout`, {
+    method: 'GET',
+    credentials: 'include'
+  })
+  const data: Response<null> = await res.json()
   if (!res.ok) {
     throw new APIError(data.meta.message, res.status)
   }
@@ -33,7 +46,8 @@ export const signup = async (payload: ISignup) => {
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify(payload)
+    body: JSON.stringify(payload),
+    credentials: 'include'
   })
   const data: Response<IUser> = await res.json()
   if (!res.ok) throw new APIError(data.meta.message, res.status)
@@ -46,7 +60,8 @@ export const verify = async (payload: IVerify) => {
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify(payload)
+    body: JSON.stringify(payload),
+    credentials: 'include'
   })
   const data: Response<IUser> = await res.json()
   if (!res.ok) throw new APIError(data.meta.message, res.status)
@@ -59,9 +74,20 @@ export const resendVerification = async (_id: string) => {
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ _id })
+    body: JSON.stringify({ _id }),
+    credentials: 'include'
   })
   const data: Response<null> = await res.json()
+  if (!res.ok) throw new APIError(data.meta.message, res.status)
+  return data
+}
+
+export const refreshToken = async () => {
+  const res = await fetch(`${API_URL}/auth/refresh-token`, {
+    method: 'GET',
+    credentials: 'include'
+  })
+  const data: Response<string> = await res.json()
   if (!res.ok) throw new APIError(data.meta.message, res.status)
   return data
 }

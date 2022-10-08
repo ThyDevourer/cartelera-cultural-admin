@@ -10,7 +10,7 @@ import { APIError } from '../utils/error'
 
 export const useUsers = () => {
   const toast = useToast()
-  const { user, logout } = useAuth()
+  const { user, logout, setToken } = useAuth()
   const token = user?.token as string
 
   const [filters, setFilters] = useState<UserFilters>({
@@ -145,7 +145,7 @@ export const useUsers = () => {
         meta: {
           token
         }
-      })
+      }, setToken)
       return res
     },
     onSuccess: () => {
@@ -176,7 +176,7 @@ export const useUsers = () => {
         meta: {
           token
         }
-      })
+      }, setToken)
       return res
     },
     onSuccess: ({ data: user }) => {
@@ -215,7 +215,7 @@ export const useUsers = () => {
         meta: {
           token
         }
-      })
+      }, setToken)
       return res
     },
     onSuccess: () => {

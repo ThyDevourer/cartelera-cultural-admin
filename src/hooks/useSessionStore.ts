@@ -9,14 +9,21 @@ interface UserState extends IUser {
 interface SessionState {
   user: UserState | null
   setUser: (user: UserState | null) => void
+  setToken: (token: string) => void
 }
 
 export const useSessionStore = create<SessionState>()(
   devtools(
     persist(
-      (set) => ({
+      (set, get) => ({
         user: null,
-        setUser: (user) => set({ user })
+        setUser: (user) => set({ user }),
+        setToken: (token) => {
+          const user = get().user
+          if (user) {
+            set({ user: { ...user, token } })
+          }
+        }
       }),
       { name: 'session' }
     ),

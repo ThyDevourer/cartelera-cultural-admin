@@ -14,7 +14,7 @@ import { APIError } from '../utils/error'
 
 export const useCategories = () => {
   const toast = useToast()
-  const { logout, user } = useAuth()
+  const { logout, user, setToken } = useAuth()
   const token = user?.token as string
   const client = useQueryClient()
   const [filters, setFilters] = useState<CategoryFilters>({
@@ -60,7 +60,7 @@ export const useCategories = () => {
         skip,
         sort
       }
-    })
+    }, setToken)
     return res
   })
 
@@ -85,7 +85,7 @@ export const useCategories = () => {
         meta: {
           token
         }
-      })
+      }, setToken)
       return res
     },
     onMutate: async (category) => {
@@ -147,7 +147,7 @@ export const useCategories = () => {
         meta: {
           token
         }
-      })
+      }, setToken)
       return res
     },
     onMutate: async (category) => {
@@ -211,7 +211,7 @@ export const useCategories = () => {
         meta: {
           token
         }
-      })
+      }, setToken)
       return res
     },
     onMutate: async (_id) => {
