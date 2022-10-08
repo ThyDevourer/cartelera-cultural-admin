@@ -2,7 +2,6 @@ import {
   Button,
   IconButton,
   HStack,
-  Icon,
   Menu,
   MenuList,
   MenuButton,
