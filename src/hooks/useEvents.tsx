@@ -19,7 +19,7 @@ import { getImageUrl as uploadImage } from '../utils/func'
 const useEvents = () => {
   const toast = useToast()
   const client = useQueryClient()
-  const { user, logout } = useAuth()
+  const { user, logout, setToken } = useAuth()
   const token = user?.token as string
   const [filters, setFilters] = useState<EventFilters>({
     title: '',
@@ -121,7 +121,7 @@ const useEvents = () => {
         meta: {
           token
         }
-      })
+      }, setToken)
       return res
     },
     onError: (err: Error) => {
@@ -155,7 +155,7 @@ const useEvents = () => {
           meta: {
             token
           }
-        })
+        }, setToken)
       return res
     },
     onSuccess: ({ data: event }) => {
@@ -202,7 +202,7 @@ const useEvents = () => {
         meta: {
           token
         }
-      })
+      }, setToken)
       return res
     },
     onMutate: async (_id) => {
@@ -345,7 +345,7 @@ export default useEvents
 
 export const useEvent = (id: string) => {
   const toast = useToast()
-  const { user, logout } = useAuth()
+  const { user, logout, setToken } = useAuth()
   const token = user?.token as string
   const client = useQueryClient()
   const { status, data } = useQuery(['events', id], async () => {
@@ -369,7 +369,7 @@ export const useEvent = (id: string) => {
         meta: {
           token
         }
-      })
+      }, setToken)
       return res
     },
     onSuccess: async event => {

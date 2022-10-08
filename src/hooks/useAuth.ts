@@ -7,12 +7,21 @@ import {
   login as _login,
   signup as _signup,
   verify as _verify,
+  logout as _logout,
   resendVerification as _resendVerification
 } from '../services/auth.service'
 import { useSessionStore } from './useSessionStore'
 
 export const useAuth = () => {
-  const { user: userState, setUser } = useSessionStore(state => ({ user: state.user, setUser: state.setUser }), shallow)
+  const {
+    user: userState,
+    setUser,
+    setToken
+  } = useSessionStore(state => ({
+    user: state.user,
+    setUser: state.setUser,
+    setToken: state.setToken
+  }), shallow)
   const toast = useToast()
   const {
     mutateAsync: login,
@@ -37,10 +46,25 @@ export const useAuth = () => {
       throw error
     }
   })
-  const logout = () => {
-    setUser(null)
-    useSessionStore.persist.clearStorage()
-  }
+  const {
+    mutate: logout,
+    isLoading: logoutIsLoading
+  } = useMutation({
+    mutationFn: () => _logout(),
+    onSuccess: () => {
+      setUser(null)
+      useSessionStore.persist.clearStorage()
+    },
+    onError: (error: Error) => {
+      toast({
+        title: 'Error',
+        description: error.message,
+        status: 'error',
+        duration: 5000,
+        isClosable: true
+      })
+    }
+  })
   const {
     mutateAsync: signup,
     isLoading: signupIsLoading
@@ -126,12 +150,14 @@ export const useAuth = () => {
     user: userState,
     login,
     loginIsLoading,
-    logout,
     signup,
     signupIsLoading,
     verify,
     verifyIsLoading,
     resendVerification,
-    resendIsLoading
+    resendIsLoading,
+    logout,
+    logoutIsLoading,
+    setToken
   }
 }
