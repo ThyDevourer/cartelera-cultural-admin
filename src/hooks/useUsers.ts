@@ -73,6 +73,7 @@ export const useUsers = () => {
             break
           case 'role':
             setFilters(prev => ({ ...prev, role: value.map((role: any) => role.value) }))
+            break
         }
       },
       300
