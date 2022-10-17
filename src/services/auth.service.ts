@@ -63,7 +63,7 @@ export const verify = async (payload: IVerify) => {
     body: JSON.stringify(payload),
     credentials: 'include'
   })
-  const data: Response<IUser> = await res.json()
+  const data: Response<string> = await res.json()
   if (!res.ok) throw new APIError(data.meta.message, res.status)
   return data
 }
