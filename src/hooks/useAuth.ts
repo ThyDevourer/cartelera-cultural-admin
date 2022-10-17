@@ -98,7 +98,9 @@ export const useAuth = () => {
     isLoading: verifyIsLoading
   } = useMutation({
     mutationFn: (payload: IVerify) => _verify(payload),
-    onSuccess: ({ data: user }) => {
+    onSuccess: ({ data: token }) => {
+      const decodedToken = jwtDecode<IUser>(token)
+      const user = { ...decodedToken, token }
       setUser(user)
       toast({
         title: '¡Éxito',
