@@ -3,15 +3,9 @@ import {
   Flex,
   Tag,
   TagLabel,
-  Text,
   Box,
   Button,
-  Stack,
   HStack,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -29,9 +23,6 @@ import {
 } from '@chakra-ui/react'
 import {
   FaPlus,
-  FaChevronDown,
-  FaChevronLeft,
-  FaChevronRight,
   FaTrash,
   FaEdit
 } from 'react-icons/fa'
@@ -48,6 +39,7 @@ import HeaderButton from '../components/HeaderButton/HeaderButton'
 import dayjs from 'dayjs'
 import AddUserForm from '../components/Forms/AddUserForm'
 import EditUserForm from '../components/Forms/EditUserForm'
+import PaginationFooter from '../components/PaginationFooter/PaginationFooter'
 
 const Users = () => {
   const {
@@ -151,7 +143,8 @@ const Users = () => {
           sort={sort}
           column={col.column.id}
         />
-      )
+      ),
+      size: 200
     }),
     columnHelper.accessor('name', {
       header: col => (
@@ -161,7 +154,8 @@ const Users = () => {
           sort={sort}
           column={col.column.id}
         />
-      )
+      ),
+      size: 200
     }),
     columnHelper.accessor('lastName', {
       header: col => (
@@ -171,7 +165,8 @@ const Users = () => {
           sort={sort}
           column={col.column.id}
         />
-      )
+      ),
+      size: 200
     }),
     columnHelper.accessor('email', {
       header: col => (
@@ -284,66 +279,16 @@ const Users = () => {
             rows={rows}
             isLoading={status === 'loading'}
           />
-          <Flex
-            w='full'
-            bgColor='bg.alt'
-            p={4}
-            borderRadius='xl'
-            alignItems='center'
-            justifyContent='space-between'
-            direction={{ base: 'column', lg: 'row' }}
-          >
-            <Text fontSize='sm'>
-              Mostrando {lowerShown} a {upperShown} de {count}
-            </Text>
-            <Stack
-              spacing={4}
-              direction={{ base: 'column', md: 'row' }}
-              alignItems='center'
-            >
-              <Text fontSize='sm'>
-                Resultados por página:
-              </Text>
-              <Menu>
-                <MenuButton
-                  as={Button}
-                  variant='alt'
-                  rightIcon={<FaChevronDown />}
-                  ml={4}
-                  fontSize='sm'
-                >
-                  {limit}
-                </MenuButton>
-                <MenuList>
-                  {[20, 50, 100, 200].map(value => (
-                    <MenuItem
-                      key={value}
-                      onClick={() => setLimit(value)}
-                    >
-                      {value}
-                    </MenuItem>
-                  ))}
-                </MenuList>
-              </Menu>
-              <Text fontSize='sm'>
-                Página {page + 1} de {maxPage + 1}
-              </Text>
-              <Button
-                variant='alt'
-                disabled={page === 0}
-                onClick={() => setPage(prev => prev - 1)}
-              >
-                <FaChevronLeft />
-              </Button>
-              <Button
-                variant='alt'
-                disabled={page === maxPage}
-                onClick={() => setPage(prev => prev + 1)}
-              >
-                <FaChevronRight />
-              </Button>
-            </Stack>
-          </Flex>
+          <PaginationFooter
+            count={count}
+            lowerShown={lowerShown}
+            upperShown={upperShown}
+            limit={limit}
+            page={page}
+            maxPage={maxPage}
+            setLimit={setLimit}
+            setPage={setPage}
+          />
         </Flex>
       </Flex>
       <Portal>

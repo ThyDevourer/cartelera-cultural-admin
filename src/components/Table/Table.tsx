@@ -6,7 +6,8 @@ import {
   Tr,
   Th,
   Td,
-  TableContainer
+  TableContainer,
+  chakra
 } from '@chakra-ui/react'
 import {
   useReactTable,
@@ -20,12 +21,29 @@ interface Props<T> {
   columns: ColumnDef<T, any>[]
   rows: T[]
   isLoading: boolean
+  fixedColumns?: boolean
 }
 
-const Table = <T, >({ columns, rows, isLoading }: Props<T>) => {
+const Table = <T, >({ columns, rows, isLoading, fixedColumns }: Props<T>) => {
+  const Resizer = chakra('div', {
+    baseStyle: {
+      position: 'absolute',
+      right: 0,
+      top: 2,
+      height: '60%',
+      width: '3px',
+      bgColor: 'bg.alt',
+      cursor: fixedColumns ? 'normal' : 'col-resize',
+      userSelect: 'none',
+      touchAction: 'none',
+      _hover: { bgColor: fixedColumns ? 'bg.alt' : 'fg.main' }
+    }
+  })
+
   const table = useReactTable({
     data: rows,
     columns,
+    columnResizeMode: 'onChange',
     getCoreRowModel: getCoreRowModel()
   })
 
@@ -36,7 +54,7 @@ const Table = <T, >({ columns, rows, isLoading }: Props<T>) => {
       overflowY='scroll'
       bgColor='bg.alt'
     >
-      <ChakraTable>
+      <ChakraTable style={{ width: fixedColumns ? 'unset' : table.getCenterTotalSize() }}>
         <Thead
           position='sticky'
           bgColor='brand.500'
@@ -50,9 +68,14 @@ const Table = <T, >({ columns, rows, isLoading }: Props<T>) => {
                   color='fg.main'
                   key={header.id}
                   borderColor='transparent'
-                  isNumeric={header.id === 'actions'}
+                  colSpan={header.colSpan}
+                  style={{ width: header.getSize() }}
+                  position='relative'
+                  onMouseDown={header.getResizeHandler()}
+                  onTouchStart={header.getResizeHandler()}
                 >
                   {flexRender(header.column.columnDef.header, header.getContext())}
+                  <Resizer />
                 </Th>
               ))}
             </Tr>
@@ -74,7 +97,7 @@ const Table = <T, >({ columns, rows, isLoading }: Props<T>) => {
                 ))}
               </Tr>
             ))
-            : <TableSkeleton colQty={columns.length} rowQty={20} />}
+            : <TableSkeleton colQty={columns.length} rowQty={1} />}
         </Tbody>
         <Tfoot>
           {table.getFooterGroups().map(footerGroup => (

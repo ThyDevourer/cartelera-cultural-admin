@@ -1,7 +1,6 @@
 import { useState, useRef, ReactElement } from 'react'
 import {
   Flex,
-  Text,
   Portal,
   useDisclosure,
   Modal,
@@ -20,11 +19,6 @@ import {
   Tag,
   TagLabel,
   Box,
-  Stack,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
   HStack,
   Tooltip
 } from '@chakra-ui/react'
@@ -35,10 +29,6 @@ import {
 import dayjs from 'dayjs'
 import {
   FaPlus,
-  FaChevronDown,
-  // FaChevronUp,
-  FaChevronLeft,
-  FaChevronRight,
   FaEdit,
   FaTrash,
   FaExternalLinkAlt
@@ -52,6 +42,7 @@ import EditEventForm from '../components/Forms/EditEventForm'
 import AddEventForm from '../components/Forms/AddEventForm'
 import FilterCard from '../components/FilterCard/FilterCard'
 import HeaderButton from '../components/HeaderButton/HeaderButton'
+import PaginationFooter from '../components/PaginationFooter/PaginationFooter'
 
 const Events = () => {
   const navigate = useNavigate()
@@ -156,7 +147,8 @@ const Events = () => {
           column={col.column.id}
         />
       ),
-      cell: info => truncate(info.getValue(), { length: 35 })
+      cell: info => truncate(info.getValue(), { length: 35 }),
+      size: 400
     }),
     columnHelper.accessor('description', {
       header: col => (
@@ -167,7 +159,8 @@ const Events = () => {
           column={col.column.id}
         />
       ),
-      cell: info => truncate(info.getValue(), { length: 35 })
+      cell: info => truncate(info.getValue(), { length: 35 }),
+      size: 400
     }),
     columnHelper.accessor('start', {
       header: col => (
@@ -288,66 +281,16 @@ const Events = () => {
             rows={rows}
             isLoading={status === 'loading'}
           />
-          <Flex
-            w='full'
-            bgColor='bg.alt'
-            p={4}
-            borderRadius='xl'
-            alignItems='center'
-            justifyContent='space-between'
-            direction={{ base: 'column', lg: 'row' }}
-          >
-            <Text fontSize='sm'>
-              Mostrando {lowerShown} a {upperShown} de {count}
-            </Text>
-            <Stack
-              spacing={4}
-              direction={{ base: 'column', md: 'row' }}
-              alignItems='center'
-            >
-              <Text fontSize='sm'>
-                Resultados por página:
-              </Text>
-              <Menu>
-                <MenuButton
-                  as={Button}
-                  variant='alt'
-                  rightIcon={<FaChevronDown />}
-                  ml={4}
-                  fontSize='sm'
-                >
-                  {limit}
-                </MenuButton>
-                <MenuList>
-                  {[20, 50, 100, 200].map(value => (
-                    <MenuItem
-                      key={value}
-                      onClick={() => setLimit(value)}
-                    >
-                      {value}
-                    </MenuItem>
-                  ))}
-                </MenuList>
-              </Menu>
-              <Text fontSize='sm'>
-                Página {page + 1} de {maxPage + 1}
-              </Text>
-              <Button
-                variant='alt'
-                disabled={page === 0}
-                onClick={() => setPage(prev => prev - 1)}
-              >
-                <FaChevronLeft />
-              </Button>
-              <Button
-                variant='alt'
-                disabled={page === maxPage}
-                onClick={() => setPage(prev => prev + 1)}
-              >
-                <FaChevronRight />
-              </Button>
-            </Stack>
-          </Flex>
+          <PaginationFooter
+            count={count}
+            lowerShown={lowerShown}
+            upperShown={upperShown}
+            limit={limit}
+            page={page}
+            maxPage={maxPage}
+            setLimit={setLimit}
+            setPage={setPage}
+          />
         </Flex>
       </Flex>
       <Portal>

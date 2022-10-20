@@ -69,6 +69,7 @@ const FilterCard = ({ filters, handleFilterChange }: Props) => {
       bgColor='bg.alt'
       borderRadius='xl'
       h='min-content'
+      w={{ base: '100%', lg: '30ch' }}
     >
       <Flex
         justifyContent='start'

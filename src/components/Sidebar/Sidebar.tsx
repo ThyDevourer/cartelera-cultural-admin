@@ -48,7 +48,10 @@ const Menu = ({ pages, isOpen, onClose }: Props) => {
             color={isActivePage ? 'fg.main' : 'bg.main'}
             borderRightRadius={isDesktop ? 0 : 'xl'}
             borderLeftRadius='xl'
-            onClick={() => navigate(page.href)}
+            onClick={() => {
+              navigate(page.href)
+              onClose()
+            }}
           >
             <HStack w='full'>
               <Text>{page.icon}</Text>

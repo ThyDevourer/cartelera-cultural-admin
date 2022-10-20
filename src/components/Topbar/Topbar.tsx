@@ -5,7 +5,8 @@ import {
   Menu,
   MenuList,
   MenuButton,
-  MenuItem
+  MenuItem,
+  useBreakpointValue
 } from '@chakra-ui/react'
 import {
   useNavigate,
@@ -33,6 +34,7 @@ const Topbar = ({
 }: Props) => {
   const navigate = useNavigate()
   const location = useLocation()
+  const breadcrumbsVisible = useBreakpointValue({ base: false, sm: true })
 
   return (
     <HStack
@@ -54,7 +56,7 @@ const Topbar = ({
         >
           <IoMdArrowBack />
         </Button>
-        <Breadcrumbs pathname={location.pathname} pages={pages} />
+        {breadcrumbsVisible && <Breadcrumbs pathname={location.pathname} pages={pages} />}
       </HStack>
       <HStack>
         <Menu>
@@ -65,7 +67,7 @@ const Topbar = ({
             h='2.5em'
             w='2.5em'
             alignItems='center'
-            icon={<FaUserCircle size={28} />}
+            icon={<FaUserCircle size={24} />}
           >
           </MenuButton>
           <MenuList>
