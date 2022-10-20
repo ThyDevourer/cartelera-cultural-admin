@@ -4,6 +4,7 @@ import {
   ComponentStyleConfig
 } from '@chakra-ui/react'
 import { set } from 'lodash'
+import { menuTheme } from './menu'
 
 const config: ThemeConfig = {
   initialColorMode: 'dark',
@@ -139,6 +140,7 @@ export const theme = extendTheme({
     Input,
     Select: Input,
     Textarea,
-    Tag
+    Tag,
+    Menu: menuTheme
   }
 })
