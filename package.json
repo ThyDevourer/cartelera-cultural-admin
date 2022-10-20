@@ -34,7 +34,7 @@
     "react-helmet": "^6.1.0",
     "react-hook-form": "^7.34.0",
     "react-icons": "^4.4.0",
-    "react-router-dom": "^6.3.0",
+    "react-router-dom": "^6.4.2",
     "superstruct": "^0.16.0",
     "zustand": "^4.0.0"
   },
