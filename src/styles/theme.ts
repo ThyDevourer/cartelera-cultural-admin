@@ -32,6 +32,12 @@ const Button: ComponentStyleConfig = {
       },
       _active: {
         backgroundColor: 'brand.400'
+      },
+      _loading: {
+        opacity: 1,
+        _hover: {
+          color: 'fg.main'
+        }
       }
     },
     alt: {
