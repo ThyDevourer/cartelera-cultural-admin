@@ -47,7 +47,7 @@ interface Props {
   user: IUser
 }
 
-const AddCategoryForm = ({ onClose, onSubmit, user }: Props) => {
+const EditUserForm = ({ onClose, onSubmit, user }: Props) => {
   const {
     register,
     handleSubmit,
@@ -59,7 +59,7 @@ const AddCategoryForm = ({ onClose, onSubmit, user }: Props) => {
     defaultValues: {
       username: user.username,
       name: user.name,
-      lastName: user.name,
+      lastName: user.lastName,
       email: user.email,
       role: user.role,
       verified: user.verified,
@@ -102,7 +102,7 @@ const AddCategoryForm = ({ onClose, onSubmit, user }: Props) => {
           </Select>
         </FormControl>
         <FormControl isInvalid={!!errors.verified} pb={4}>
-          <FormLabel htmlFor='verified'>Verificado?</FormLabel>
+          <FormLabel htmlFor='verified'>¿Verificado?</FormLabel>
           <Switch id='verified' {...register('verified')} />
         </FormControl>
         <Button
@@ -118,4 +118,4 @@ const AddCategoryForm = ({ onClose, onSubmit, user }: Props) => {
   )
 }
 
-export default AddCategoryForm
+export default EditUserForm

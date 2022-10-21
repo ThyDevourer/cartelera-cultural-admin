@@ -149,8 +149,15 @@ export const useUsers = () => {
       }, setToken)
       return res
     },
-    onSuccess: () => {
+    onSuccess: ({ data: user }) => {
       client.invalidateQueries(['users'])
+      toast({
+        title: '¡Éxito!',
+        description: `Usuario ${user.username} creado correctamente`,
+        status: 'success',
+        duration: 5000,
+        isClosable: true
+      })
     },
     onError: (err: Error) => {
       toast({
@@ -191,6 +198,13 @@ export const useUsers = () => {
         })
         client.setQueryData(['users', user._id], user)
       }
+      toast({
+        title: '¡Éxito!',
+        description: `Usuario ${user.username} editado correctamente`,
+        status: 'success',
+        duration: 5000,
+        isClosable: true
+      })
     },
     onError: (err: Error) => {
       toast({
@@ -221,6 +235,13 @@ export const useUsers = () => {
     },
     onSuccess: () => {
       client.invalidateQueries(['users'])
+      toast({
+        title: '¡Éxito!',
+        description: 'Usuario eliminado correctamente',
+        status: 'success',
+        duration: 5000,
+        isClosable: true
+      })
     },
     onError: (err: Error) => {
       toast({
