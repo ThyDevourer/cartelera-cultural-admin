@@ -149,8 +149,8 @@ export const useUsers = () => {
       }, setToken)
       return res
     },
-    onSuccess: ({ data: user }) => {
-      client.invalidateQueries(['users'])
+    onSuccess: async ({ data: user }) => {
+      await client.invalidateQueries(['users'])
       toast({
         title: '¡Éxito!',
         description: `Usuario ${user.username} creado correctamente`,
@@ -233,8 +233,8 @@ export const useUsers = () => {
       }, setToken)
       return res
     },
-    onSuccess: () => {
-      client.invalidateQueries(['users'])
+    onSuccess: async () => {
+      await client.invalidateQueries(['users'])
       toast({
         title: '¡Éxito!',
         description: 'Usuario eliminado correctamente',
