@@ -88,26 +88,17 @@ export const useCategories = () => {
       }, setToken)
       return res
     },
-    onMutate: async (category) => {
-      await client.cancelQueries(['categories'])
-      const prevCategories = client.getQueryData<Response<ICategory[]>>(['categories', { filters, limit, skip, sort }])
-      const prevTotalCount = client.getQueryData<Response<number>>(['categories', 'total'])
-      if (prevCategories && prevTotalCount) {
-        client.setQueryData(['categories', { filters, limit, skip, sort }], {
-          data: [...prevCategories.data, { ...category, _id: null }],
-          meta: {
-            ...prevCategories.meta,
-            count: prevCategories.meta.count + 1
-          }
-        })
-        client.setQueryData(['categories', 'total'], {
-          ...prevTotalCount,
-          data: prevTotalCount.data + 1
-        })
-      }
-      return { prevCategories, prevTotalCount }
+    onSuccess: async ({ data: category }) => {
+      await client.invalidateQueries(['categories'])
+      toast({
+        title: '¡Éxito!',
+        description: `Categoría ${category.name} creada correctamente`,
+        status: 'success',
+        duration: 5000,
+        isClosable: true
+      })
     },
-    onError: (err: Error, _, context: any) => {
+    onError: (err: Error) => {
       toast({
         title: 'Error',
         description: err.message,
@@ -119,21 +110,6 @@ export const useCategories = () => {
         if (err.status === 401) {
           logout()
         }
-      }
-      if (context?.prevCategories && context?.prevTotalCount) {
-        client.setQueryData<Response<ICategory[]>>(['categories', { filters, limit, skip, sort }], context.prevCategories)
-        client.setQueryData<Response<number>>(['categories', 'total'], context.prevTotalCount)
-      }
-    },
-    onSuccess: ({ data: category }) => {
-      const prevCategories = client.getQueryData<Response<ICategory[]>>(['categories', { filters, limit, skip, sort }])
-      if (prevCategories) {
-        const newCategories = [...prevCategories.data]
-        newCategories[newCategories.findIndex(c => c._id === null)] = category
-        client.setQueryData<Response<ICategory[]>>(['categories', { filters, limit, skip, sort }], {
-          ...prevCategories,
-          data: newCategories
-        })
       }
     }
   })
@@ -150,25 +126,7 @@ export const useCategories = () => {
       }, setToken)
       return res
     },
-    onMutate: async (category) => {
-      await client.cancelQueries(['categories'])
-      const prevCategories = client.getQueryData<Response<ICategory[]>>(['categories', {
-        filters,
-        limit,
-        skip,
-        sort
-      }])
-      if (prevCategories) {
-        const newCategories = [...prevCategories.data]
-        newCategories[newCategories.findIndex(c => c._id === category._id)] = category
-        client.setQueryData(['categories', { filters, limit, skip, sort }], {
-          ...prevCategories,
-          data: newCategories
-        })
-      }
-      return { prevCategories }
-    },
-    onError: (err: Error, _, context: any) => {
+    onError: (err: Error) => {
       toast({
         title: 'Error',
         description: err.message,
@@ -181,14 +139,6 @@ export const useCategories = () => {
           logout()
         }
       }
-      if (context?.prevCategories) {
-        client.setQueryData<Response<ICategory[]>>(['categories', {
-          filters,
-          limit,
-          skip,
-          sort
-        }], context.prevCategories)
-      }
     },
     onSuccess: ({ data: category }) => {
       const prevCategories = client.getQueryData<Response<ICategory[]>>(['categories', { filters, limit, skip, sort }])
@@ -200,6 +150,13 @@ export const useCategories = () => {
           data: newCategories
         })
       }
+      toast({
+        title: '¡Éxito!',
+        description: 'Categoría editada correctamente',
+        status: 'success',
+        duration: 5000,
+        isClosable: true
+      })
     }
   })
 
@@ -214,31 +171,17 @@ export const useCategories = () => {
       }, setToken)
       return res
     },
-    onMutate: async (_id) => {
-      await client.cancelQueries(['categories'])
-      const prevCategories = client.getQueryData<Response<ICategory[]>>(['categories', {
-        filters,
-        limit,
-        skip,
-        sort
-      }])
-      const prevTotalCount = client.getQueryData<Response<number>>(['categories', 'total'])
-      if (prevCategories && prevTotalCount) {
-        client.setQueryData(['categories', { filters, limit, skip, sort }], {
-          data: [...prevCategories.data.filter(category => category._id !== _id)],
-          meta: {
-            ...prevCategories.meta,
-            count: prevCategories.meta.count - 1
-          }
-        })
-        client.setQueryData(['categories', 'total'], {
-          ...prevTotalCount,
-          data: prevTotalCount.data - 1
-        })
-      }
-      return { prevCategories, prevTotalCount }
+    onSuccess: async () => {
+      await client.invalidateQueries(['categories'])
+      toast({
+        title: '¡Éxito!',
+        description: 'Categoría eliminada correctamente',
+        status: 'success',
+        duration: 5000,
+        isClosable: true
+      })
     },
-    onError: (err: Error, _, context: any) => {
+    onError: (err: Error) => {
       toast({
         title: 'Error',
         description: err.message,
@@ -250,15 +193,6 @@ export const useCategories = () => {
         if (err.status === 401) {
           logout()
         }
-      }
-      if (context?.prevCategories && context?.prevTotalCount) {
-        client.setQueryData<Response<ICategory[]>>(['categories', {
-          filters,
-          limit,
-          skip,
-          sort
-        }], context.prevCategories)
-        client.setQueryData<Response<number>>(['categories', 'total'], context.prevTotalCount)
       }
     }
   })
