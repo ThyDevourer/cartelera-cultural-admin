@@ -60,6 +60,7 @@ const Verify = () => {
               type='text'
               variant='normal'
               mb={6}
+              isDisabled={isLoading || resendIsLoading}
             />
           </FormControl>
           <Button

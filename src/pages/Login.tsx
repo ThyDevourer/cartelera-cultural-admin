@@ -55,6 +55,7 @@ const Login = () => {
               placeholder='Usuario o Email'
               variant='normal'
               mb={2}
+              isDisabled={isLoading}
             />
           </FormControl>
           <FormControl isInvalid={touchedFields.password && !!errors.password}>
@@ -64,6 +65,7 @@ const Login = () => {
               type='password'
               variant='normal'
               mb={6}
+              isDisabled={isLoading}
             />
           </FormControl>
           <Button

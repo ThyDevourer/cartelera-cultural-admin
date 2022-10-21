@@ -55,6 +55,7 @@ const Register = () => {
               placeholder='Nombre'
               variant='normal'
               mb={2}
+              isDisabled={isLoading}
             />
           </FormControl>
           <FormControl isInvalid={touchedFields.lastName && !!errors.lastName}>
@@ -63,6 +64,7 @@ const Register = () => {
               placeholder='Apellido'
               variant='normal'
               mb={2}
+              isDisabled={isLoading}
             />
           </FormControl>
           <FormControl isInvalid={touchedFields.username && !!errors.username}>
@@ -71,6 +73,7 @@ const Register = () => {
               placeholder='Nombre de Usuario'
               variant='normal'
               mb={2}
+              isDisabled={isLoading}
             />
           </FormControl>
           <FormControl isInvalid={touchedFields.email && !!errors.email}>
@@ -79,6 +82,7 @@ const Register = () => {
               placeholder='Email'
               variant='normal'
               mb={2}
+              isDisabled={isLoading}
             />
           </FormControl>
           <FormControl isInvalid={touchedFields.password && !!errors.password}>
@@ -88,6 +92,7 @@ const Register = () => {
               type='password'
               variant='normal'
               mb={6}
+              isDisabled={isLoading}
             />
           </FormControl>
           <Button
