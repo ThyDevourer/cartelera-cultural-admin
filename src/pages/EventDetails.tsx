@@ -40,7 +40,8 @@ const EventDetails = () => {
   const {
     status,
     data,
-    togglePublished
+    togglePublished,
+    isLoading: isToggleLoading
   } = useEvent(id as string)
 
   const onClickPublish = () => {
@@ -56,6 +57,7 @@ const EventDetails = () => {
       variant='alt'
       onClick={onClickPublish}
       rightIcon={published ? <FaEdit /> : <FaCheckCircle />}
+      isLoading={isToggleLoading}
     >
       {published ? 'Convertir a Borrador' : 'Publicar'}
     </Button>

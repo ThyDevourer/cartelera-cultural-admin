@@ -138,8 +138,15 @@ const useEvents = () => {
         }
       }
     },
-    onSuccess: () => {
-      client.invalidateQueries(['events'])
+    onSuccess: async () => {
+      await client.invalidateQueries(['events'])
+      toast({
+        title: '¡Éxito!',
+        description: 'Evento creado correctamente',
+        status: 'success',
+        duration: 5000,
+        isClosable: true
+      })
     }
   })
 
@@ -165,6 +172,7 @@ const useEvents = () => {
         skip,
         sort
       }])
+      const prevEvent = client.getQueryData<Response<IEvent>>(['events', event._id])
       if (prevEvents) {
         const newEvents = [...prevEvents.data]
         newEvents[newEvents.findIndex(e => e._id === event._id)] = {
@@ -175,8 +183,20 @@ const useEvents = () => {
           ...prevEvents,
           data: newEvents
         })
-        client.setQueryData(['events', event._id], event)
       }
+      if (prevEvent) {
+        client.setQueryData(['events', event._id], {
+          data: event,
+          meta: { ...prevEvent.meta }
+        })
+      }
+      toast({
+        title: '¡Éxito!',
+        description: 'Evento editado correctamente',
+        status: 'success',
+        duration: 5000,
+        isClosable: true
+      })
     },
     onError: (err: Error) => {
       toast({
@@ -205,20 +225,17 @@ const useEvents = () => {
       }, setToken)
       return res
     },
-    onMutate: async (_id) => {
-      await client.cancelQueries(['events'])
-      const prevEvents = client.getQueryData<Response<IEvent[]>>(['events', { filters, limit, skip, sort }])
-      if (prevEvents) {
-        client.setQueryData(['events', { filters, limit, skip, sort }], {
-          data: [...prevEvents.data.filter(event => event._id !== _id)],
-          meta: {
-            ...prevEvents.meta,
-            count: count - 1
-          }
-        })
-      }
+    onSuccess: async () => {
+      await client.invalidateQueries(['events'])
+      toast({
+        title: '¡Éxito!',
+        description: 'Evento eliminado correctamente',
+        status: 'success',
+        duration: 5000,
+        isClosable: true
+      })
     },
-    onError: (err: Error, _, context: any) => {
+    onError: (err: Error) => {
       toast({
         title: 'Error',
         description: err.message,
@@ -230,9 +247,6 @@ const useEvents = () => {
         if (err.status === 401) {
           logout()
         }
-      }
-      if (context?.prevEvents) {
-        client.setQueryData<IEvent[]>(['events', { filters, limit, skip, sort }], context.prevEvents)
       }
     }
   })
@@ -359,7 +373,10 @@ export const useEvent = (id: string) => {
     return res
   })
 
-  const { mutate: togglePublished } = useMutation({
+  const {
+    mutate: togglePublished,
+    isLoading
+  } = useMutation({
     mutationFn: async () => {
       const { published } = data?.data as IEvent
       const res = await crud<{ published: boolean }, IEvent>({
@@ -405,6 +422,7 @@ export const useEvent = (id: string) => {
   return {
     status,
     data,
-    togglePublished
+    togglePublished,
+    isLoading
   }
 }
