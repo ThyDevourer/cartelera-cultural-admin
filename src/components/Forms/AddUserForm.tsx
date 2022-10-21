@@ -44,7 +44,7 @@ interface Props {
   onSubmit: (category: UserPayload) => void
 }
 
-const AddCategoryForm = ({ onClose, onSubmit }: Props) => {
+const AddUserForm = ({ onClose, onSubmit }: Props) => {
   const {
     register,
     handleSubmit,
@@ -90,7 +90,7 @@ const AddCategoryForm = ({ onClose, onSubmit }: Props) => {
           </Select>
         </FormControl>
         <FormControl isInvalid={!!errors.verified} pb={4}>
-          <FormLabel htmlFor='verified'>Verificado?</FormLabel>
+          <FormLabel htmlFor='verified'>¿Verificado?</FormLabel>
           <Switch id='verified' {...register('verified')} />
         </FormControl>
         <Button
@@ -106,4 +106,4 @@ const AddCategoryForm = ({ onClose, onSubmit }: Props) => {
   )
 }
 
-export default AddCategoryForm
+export default AddUserForm
