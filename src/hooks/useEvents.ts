@@ -275,7 +275,7 @@ const useEvents = () => {
         setFilters(prev => ({ ...prev, end: { ...prev.end, upper: value } }))
         break
       case 'ticketLink':
-        setFilters(prev => ({ ...prev, ticketLink: value !== 'all' ? value : null }))
+        setFilters(prev => ({ ...prev, ticketLink: value }))
         break
       case 'showDeleted':
         setFilters(prev => ({ ...prev, showDeleted: value === 'true' }))
