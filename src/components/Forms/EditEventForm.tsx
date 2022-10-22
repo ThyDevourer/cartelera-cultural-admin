@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useRef, useEffect } from 'react'
 import {
   FormControl,
   FormLabel,
@@ -77,6 +77,14 @@ const EditEventForm = ({ event, onClose, onSubmit, getImageUrl }: Props) => {
     published,
     categories: prevCategories
   } = event
+
+  const { rows: categories } = useCategories()
+  const options = categories.map(category => ({ label: category.name, value: category._id }))
+  const initialCategories = prevCategories.map(category => {
+    const cat = categories.find(c => c._id === category)
+    return { label: cat?.name ?? '', value: cat?._id ?? '' }
+  })
+
   const {
     register,
     handleSubmit,
@@ -84,7 +92,8 @@ const EditEventForm = ({ event, onClose, onSubmit, getImageUrl }: Props) => {
     control,
     formState: {
       errors
-    }
+    },
+    reset
   } = useForm<FormValues>({
     resolver: superstructResolver(schema),
     defaultValues: {
@@ -94,15 +103,16 @@ const EditEventForm = ({ event, onClose, onSubmit, getImageUrl }: Props) => {
       end: dayjs(end).format('YYYY-MM-DDTHH:mm') ?? '',
       ticketLink: ticketLink ?? '',
       locationName,
-      published
+      published,
+      categories: initialCategories
     }
   })
-  const { rows: categories } = useCategories()
-  const options = categories.map(category => ({ label: category.name, value: category._id }))
-  const initialCategories = prevCategories.map(category => {
-    const cat = categories.find(c => c._id === category)
-    return { label: cat?.name ?? '', value: cat?._id ?? '' }
-  })
+
+  useEffect(() => {
+    if (categories.length > 0) {
+      reset({ categories: initialCategories })
+    }
+  }, [categories])
 
   const submitHandler: SubmitHandler<FormValues> = async (data) => {
     const { flyer, categories: newCategories, ...rest } = data
