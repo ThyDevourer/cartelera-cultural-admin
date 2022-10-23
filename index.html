@@ -7,10 +7,14 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React + TS</title>
+    <title id="template-title">Cartelera Cultural de Ensenada</title>
   </head>
   <body>
       <div id="root"></div>
-      <script type="module" src="/src/main.tsx"></script>
+    <script>
+        const templateTitle = document.getElementById('template-title')
+        if (templateTitle) templateTitle.parentNode.removeChild(templateTitle)
+    </script>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
