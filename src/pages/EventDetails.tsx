@@ -28,6 +28,7 @@ import { capitalize, get } from 'lodash'
 import dayjs from 'dayjs'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 import 'dayjs/locale/es-mx'
+import { Title } from 'react-head'
 import DetailsHeader from '../components/DetailsHeader/DetailsHeader'
 import { imageBaseUrl } from '../utils/constants'
 import { IUser } from '../types/interfaces'
@@ -75,6 +76,7 @@ const EventDetails = () => {
   }
   return (
     <>
+      <Title>{data!.data.title} - Cartelera Cultural de Ensenada</Title>
       <DetailsHeader title={data?.data.title as string} tools={PublishButton}/>
       <Flex
         direction={{ base: 'column', lg: 'row' }}

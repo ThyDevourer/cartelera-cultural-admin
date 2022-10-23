@@ -35,6 +35,7 @@ import {
 } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 import { truncate } from 'lodash'
+import { Title } from 'react-head'
 import useEvents from '../hooks/useEvents'
 import { IEvent, ActionDef } from '../types/interfaces'
 import Table from '../components/Table/Table'
@@ -238,6 +239,7 @@ const Events = () => {
 
   return (
     <>
+      <Title>Eventos - Cartelera Cultural de Ensenada</Title>
       <Flex
         my={4}
         direction='row'

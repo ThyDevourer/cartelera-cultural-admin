@@ -13,6 +13,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { ISignup } from '../types/interfaces'
 import { emailRegex } from '../utils/constants'
+import { Meta, Title } from 'react-head'
 
 type FormValues = ISignup & { repeat: string }
 
@@ -50,80 +51,84 @@ const Register = () => {
   }
 
   return (
-    <Flex h='100vh' align='center' justify='center'>
-      <Flex p={12} direction='column' background='bg.alt' borderRadius='xl'>
-        <Heading pb={6}>Regístrate</Heading>
-        <chakra.form
-          onSubmit={handleSubmit(onSubmit)}
-          mb={4}
-        >
-          <FormControl isInvalid={touchedFields.name && !!errors.name}>
-            <Input
-              {...register('name')}
-              placeholder='Nombre'
-              variant='normal'
-              mb={2}
-              isDisabled={isLoading}
-            />
-          </FormControl>
-          <FormControl isInvalid={touchedFields.lastName && !!errors.lastName}>
-            <Input
-              {...register('lastName')}
-              placeholder='Apellido'
-              variant='normal'
-              mb={2}
-              isDisabled={isLoading}
-            />
-          </FormControl>
-          <FormControl isInvalid={touchedFields.username && !!errors.username}>
-            <Input
-              {...register('username')}
-              placeholder='Nombre de Usuario'
-              variant='normal'
-              mb={2}
-              isDisabled={isLoading}
-            />
-          </FormControl>
-          <FormControl isInvalid={touchedFields.email && !!errors.email}>
-            <Input
-              {...register('email')}
-              placeholder='Email'
-              variant='normal'
-              mb={2}
-              isDisabled={isLoading}
-            />
-          </FormControl>
-          <FormControl isInvalid={touchedFields.password && !!errors.password}>
-            <Input
-              {...register('password')}
-              placeholder='Contraseña'
-              type='password'
-              variant='normal'
-              mb={2}
-              isDisabled={isLoading}
-            />
-          </FormControl>
-          <FormControl isInvalid={touchedFields.repeat && !!errors.repeat}>
-            <Input
-              {...register('repeat')}
-              placeholder='Repetir contraseña'
-              type='password'
-              variant='normal'
-              mb={6}
-              isDisabled={isLoading}
-            />
-          </FormControl>
-          <Button
-            w='full'
-            variant='brand'
-            type='submit'
-            isLoading={isLoading}
+    <>
+      <Title>Registrarse en el sistema</Title>
+      <Meta name='description' content='Crear una nueva cuenta de usuario' />
+      <Flex h='100vh' align='center' justify='center'>
+        <Flex p={12} direction='column' background='bg.alt' borderRadius='xl'>
+          <Heading pb={6}>Regístrate</Heading>
+          <chakra.form
+            onSubmit={handleSubmit(onSubmit)}
+            mb={4}
           >
-            Crear cuenta
-          </Button>
-        </chakra.form>
+            <FormControl isInvalid={touchedFields.name && !!errors.name}>
+              <Input
+                {...register('name')}
+                placeholder='Nombre'
+                variant='normal'
+                mb={2}
+                isDisabled={isLoading}
+              />
+            </FormControl>
+            <FormControl isInvalid={touchedFields.lastName && !!errors.lastName}>
+              <Input
+                {...register('lastName')}
+                placeholder='Apellido'
+                variant='normal'
+                mb={2}
+                isDisabled={isLoading}
+              />
+            </FormControl>
+            <FormControl isInvalid={touchedFields.username && !!errors.username}>
+              <Input
+                {...register('username')}
+                placeholder='Nombre de Usuario'
+                variant='normal'
+                mb={2}
+                isDisabled={isLoading}
+              />
+            </FormControl>
+            <FormControl isInvalid={touchedFields.email && !!errors.email}>
+              <Input
+                {...register('email')}
+                placeholder='Email'
+                variant='normal'
+                mb={2}
+                isDisabled={isLoading}
+              />
+            </FormControl>
+            <FormControl isInvalid={touchedFields.password && !!errors.password}>
+              <Input
+                {...register('password')}
+                placeholder='Contraseña'
+                type='password'
+                variant='normal'
+                mb={2}
+                isDisabled={isLoading}
+              />
+            </FormControl>
+            <FormControl isInvalid={touchedFields.repeat && !!errors.repeat}>
+              <Input
+                {...register('repeat')}
+                placeholder='Repetir contraseña'
+                type='password'
+                variant='normal'
+                mb={6}
+                isDisabled={isLoading}
+              />
+            </FormControl>
+            <Button
+              w='full'
+              variant='brand'
+              type='submit'
+              isLoading={isLoading}
+            >
+              Crear cuenta
+            </Button>
+          </chakra.form>
+        </Flex>
       </Flex>
-    </Flex>
+    </>
   )
 }
 

@@ -34,6 +34,7 @@ import { useUsers } from '../hooks/useUsers'
 import FilterCard from '../components/FilterCard/FilterCard'
 import Table from '../components/Table/Table'
 import { capitalize } from 'lodash'
+import { Title } from 'react-head'
 import { ActionDef, IUser } from '../types/interfaces'
 import HeaderButton from '../components/HeaderButton/HeaderButton'
 import dayjs from 'dayjs'
@@ -236,6 +237,7 @@ const Users = () => {
 
   return (
     <>
+      <Title>Usuarios - Cartelera Cultural de Ensenada</Title>
       <Flex
         my={4}
         direction='row'

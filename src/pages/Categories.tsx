@@ -35,6 +35,7 @@ import { useCategories } from '../hooks/useCategories'
 import FilterCard from '../components/FilterCard/FilterCard'
 import Table from '../components/Table/Table'
 import { truncate } from 'lodash'
+import { Title } from 'react-head'
 import { ICategory, ActionDef } from '../types/interfaces'
 import HeaderButton from '../components/HeaderButton/HeaderButton'
 import AddCategoryForm from '../components/Forms/AddCategoryForm'
@@ -180,6 +181,7 @@ const Categories = () => {
 
   return (
     <>
+      <Title>Categorías - Cartelera Cultural de Ensenada</Title>
       <Flex
         my={4}
         direction='row'

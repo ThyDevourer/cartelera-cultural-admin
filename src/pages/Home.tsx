@@ -3,6 +3,7 @@ import {
   Heading,
   VStack
 } from '@chakra-ui/react'
+import { Title } from 'react-head'
 import { Page } from '../types/interfaces'
 import SectionCard from '../components/SectionCard/SectionCard'
 
@@ -15,6 +16,7 @@ const Home = ({ pages }: Props) => {
 
   return (
     <>
+      <Title>Inicio - Cartelera Cultural de Ensenada</Title>
       <Heading as='h1' mb={4}>Hola {user?.username}!</Heading>
       <VStack spacing={4}>
         {pages

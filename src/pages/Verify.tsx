@@ -8,6 +8,7 @@ import {
 } from '@chakra-ui/react'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
+import { Title, Meta } from 'react-head'
 import { useAuth } from '../hooks/useAuth'
 
 interface FormValues {
@@ -46,41 +47,45 @@ const Verify = () => {
   }
 
   return (
-    <Flex h='100vh' align='center' justify='center'>
-      <Flex p={12} direction='column' background='bg.alt' borderRadius='xl'>
-        <Heading pb={6}>Verifica tu cuenta</Heading>
-        <chakra.form
-          onSubmit={handleSubmit(onSubmit)}
-          mb={4}
-        >
-          <FormControl isInvalid={touchedFields.code && !!errors.code}>
-            <Input
-              {...register('code', { required: true })}
-              placeholder='Código de verificación'
-              type='text'
-              variant='normal'
-              mb={6}
-              isDisabled={isLoading || resendIsLoading}
-            />
-          </FormControl>
-          <Button
-            w='full'
-            variant='brand'
-            type='submit'
-            isLoading={isLoading}
+    <>
+      <Title>Verifica tu cuenta</Title>
+      <Meta name='description' content='Verificar cuenta de usuario' />
+      <Flex h='100vh' align='center' justify='center'>
+        <Flex p={12} direction='column' background='bg.alt' borderRadius='xl'>
+          <Heading pb={6}>Verifica tu cuenta</Heading>
+          <chakra.form
+            onSubmit={handleSubmit(onSubmit)}
+            mb={4}
           >
-            Verificar cuenta
+            <FormControl isInvalid={touchedFields.code && !!errors.code}>
+              <Input
+                {...register('code', { required: true })}
+                placeholder='Código de verificación'
+                type='text'
+                variant='normal'
+                mb={6}
+                isDisabled={isLoading || resendIsLoading}
+              />
+            </FormControl>
+            <Button
+              w='full'
+              variant='brand'
+              type='submit'
+              isLoading={isLoading}
+            >
+              Verificar cuenta
+            </Button>
+          </chakra.form>
+          <Button
+            variant='link'
+            onClick={() => resendVerification(user?._id as string)}
+            isLoading={resendIsLoading}
+          >
+            Enviar un nuevo código
           </Button>
-        </chakra.form>
-        <Button
-          variant='link'
-          onClick={() => resendVerification(user?._id as string)}
-          isLoading={resendIsLoading}
-        >
-          Enviar un nuevo código
-        </Button>
+        </Flex>
       </Flex>
-    </Flex>
+    </>
   )
 }
 
