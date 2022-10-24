@@ -15,7 +15,7 @@ const DetailsHeader = ({ title, tools }: Props) => {
       direction={{ base: 'column', md: 'row' }}
       justifyContent='space-between'
     >
-      <Heading mb={4}>{title}</Heading>
+      <Heading mb={6}>{title}</Heading>
       {tools && (
         <Flex
           direction={{ base: 'column', md: 'row' }}
