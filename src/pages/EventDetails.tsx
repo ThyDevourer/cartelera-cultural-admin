@@ -24,7 +24,7 @@ import {
   FaCalendarAlt,
   FaExternalLinkAlt
 } from 'react-icons/fa'
-import { capitalize, get } from 'lodash'
+import { capitalize } from 'lodash'
 import dayjs from 'dayjs'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 import 'dayjs/locale/es-mx'
@@ -64,20 +64,25 @@ const EventDetails = () => {
     </Button>
   )
 
-  const author = get(data, 'data.createdBy', null) as IUser
-  const startDate = get(data, 'data.start', '')
-  const endDate = get(data, 'data.end', '')
-  const ticketLink = get(data, 'data.ticketLink', '')
-
   if (status === 'loading') {
     return <Center w='full' h='full'><Spinner size='xl' /></Center>
   } else if (status === 'error') {
     return <Center w='full' h='full'><Text fontSize='72px'>An error has ocurred :(</Text></Center>
   }
+
+  const {
+    start: startDate,
+    end: endDate,
+    flyer,
+    ticketLink,
+    createdBy
+  } = data!.data
+  const author = createdBy as IUser
+
   return (
     <>
       <Title>{data!.data.title} - Cartelera Cultural de Ensenada</Title>
-      <DetailsHeader title={data?.data.title as string} tools={PublishButton}/>
+      <DetailsHeader title={data?.data.title as string} tools={PublishButton} />
       <Flex
         direction={{ base: 'column', lg: 'row' }}
         gap={16}
@@ -93,103 +98,97 @@ const EventDetails = () => {
             </Tag>
             {ticketLink
               ? (
-              <Link href={ticketLink} isExternal>
-                Venta de boletos <Icon as={FaExternalLinkAlt} boxSize={3} />
-              </Link>
+                <Link href={ticketLink} isExternal>
+                  Venta de boletos <Icon as={FaExternalLinkAlt} boxSize={3} />
+                </Link>
                 )
               : 'Sin venta de boletos'}
-            </Flex>
+          </Flex>
+          <Flex
+            gap={4}
+            direction='column'
+            justifyContent='start'
+            w='full'
+            flexBasis='45%'
+          >
+            <Flex
+              direction='row'
+              alignItems='center'
+              justifyContent='start'
+              gap={4}
+              borderRadius='xl'
+              mt={4}
+            >
               <Center
-                my={6}
-                pt='75%'
-                w='100%'
-                borderRadius='xl'
-                position='relative'
-                overflowY='hidden'
-                style={{ transition: 'padding 0.2s' }}
-                _hover={{ paddingTop: '100%' }}
+                ml={2}
+                mr={{ base: 0, md: 2 }}
+                p={4}
+                bgColor='bg.alt'
+                borderRadius='full'
               >
-                <Image
-                  src={`${imageBaseUrl}${data?.data.flyer}`}
-                  fit='cover'
-                  borderRadius='xl'
-                  position='absolute'
-                  top={0}
+                <Icon
+                  as={FaCalendarAlt}
+                  boxSize={6}
                 />
               </Center>
-              </Box>
-              <Flex
-                gap={4}
-                mb={4}
-                direction='column'
-                justifyContent='start'
-                w='full'
-                flexBasis='45%'
+              <VStack alignItems='start'>
+                <Text>{capitalize(dayjs(startDate).format('llll'))}{endDate && ' -'}</Text>
+                {endDate && <Text>{capitalize(dayjs(endDate).format('llll'))}</Text>}
+              </VStack>
+            </Flex>
+            <Flex
+              direction='row'
+              alignItems='center'
+              justifyContent='start'
+              gap={4}
+              borderRadius='xl'
+              mb={4}
+            >
+              <Center
+                ml={2}
+                mr={{ base: 0, md: 2 }}
+                p={4}
+                bgColor='bg.alt'
+                borderRadius='full'
               >
-                <Flex
-                  direction='row'
-                  alignItems='center'
-                  justifyContent={{ base: 'center', md: 'start' }}
-                  gap={4}
+                <Icon
+                  as={FaMapMarkedAlt}
+                  boxSize={6}
+                />
+              </Center>
+              <Box>
+                {data?.data.locationName}
+              </Box>
+            </Flex>
+            <Text mb={4}>{data?.data.description}</Text>
+            <Wrap>
+              <Text alignSelf='center'>Categorías:</Text>
+              {data?.data.categories.map(category => (
+                <Tag
+                  key={`category-${category._id}`}
                   borderRadius='xl'
+                  variant='slim'
                 >
-                  <Center
-                    ml={2}
-                    mr={{ base: 0, md: 2 }}
-                    p={4}
-                    bgColor='bg.alt'
-                    borderRadius='full'
-                  >
-                    <Icon
-                      as={FaCalendarAlt}
-                      boxSize={6}
-                    />
-                  </Center>
-                  <VStack alignItems='start'>
-                    <Text>{capitalize(dayjs(startDate).format('llll'))}{endDate && ' -'}</Text>
-                    {endDate && <Text>{capitalize(dayjs(endDate).format('llll'))}</Text>}
-                  </VStack>
-                </Flex>
-                <Flex
-                  direction='row'
-                  alignItems='center'
-                  justifyContent={{ base: 'center', md: 'start' }}
-                  gap={4}
-                  borderRadius='xl'
-                  mb={8}
-                >
-                  <Center
-                    ml={2}
-                    mr={{ base: 0, md: 2 }}
-                    p={4}
-                    bgColor='bg.alt'
-                    borderRadius='full'
-                  >
-                    <Icon
-                      as={FaMapMarkedAlt}
-                      boxSize={6}
-                    />
-                  </Center>
-                  <Box>
-                    {data?.data.locationName}
-                  </Box>
-                </Flex>
-                <Text mb={4}>{data?.data.description}</Text>
-                <Wrap>
-                  <Text alignSelf='center'>Categorías:</Text>
-                  {data?.data.categories.map(category => (
-                    <Tag
-                      key={`category-${category._id}`}
-                      borderRadius='xl'
-                      variant='slim'
-                    >
-                      {category.name}
-                    </Tag>
-                  ))}
-                </Wrap>
-              </Flex>
-              </Flex>
-              </>
+                  {category.name}
+                </Tag>
+              ))}
+            </Wrap>
+          </Flex>
+        </Box>
+        <Center
+          w='100%'
+          borderRadius='xl'
+          flexBasis='45%'
+          m={4}
+        >
+          <Image
+            src={`${imageBaseUrl}${flyer}`}
+            fit='cover'
+            borderRadius='xl'
+          />
+        </Center>
+      </Flex>
+    </>
   )
 }
 
