@@ -48,8 +48,12 @@ export const parseQueryParams = ({ filters, limit, skip, sort }: ParseQueryParam
   return qs.stringify(query)
 }
 
-export const getImageUrl = async (image: FileList, token: string) => {
-  if (image) {
+export const getImageUrl = async (
+  image: FileList,
+  token: string,
+  tokenUpdater: Parameters<typeof crud>[1]
+) => {
+  if (image[0]) {
     const formData = new FormData()
     formData.append('image', image[0])
     const { data: imgUrl } = await crud<FormData, string>({
@@ -59,7 +63,7 @@ export const getImageUrl = async (image: FileList, token: string) => {
       meta: {
         token
       }
-    })
+    }, tokenUpdater)
     return imgUrl
   }
   return ''

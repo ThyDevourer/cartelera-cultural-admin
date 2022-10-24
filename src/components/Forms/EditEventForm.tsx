@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react'
+import { useRef } from 'react'
 import {
   FormControl,
   FormLabel,
@@ -9,7 +9,9 @@ import {
   Switch,
   chakra,
   HStack,
-  Text
+  Text,
+  Spinner,
+  Center
 } from '@chakra-ui/react'
 import {
   useForm,
@@ -31,7 +33,7 @@ import dayjs from 'dayjs'
 import { Select } from 'chakra-react-select'
 import { FaCloudUploadAlt, FaSave } from 'react-icons/fa'
 import { truncate } from 'lodash'
-import { EditEventPayload, IEvent } from '../../types/interfaces'
+import { EditEventPayload, ICategory, IEvent } from '../../types/interfaces'
 import { useCategories } from '../../hooks/useCategories'
 
 type FormValues = Omit<IEvent, '_id' | 'active' | 'flyer' | 'categories'> & {
@@ -66,7 +68,11 @@ const schema = object({
   })))
 })
 
-const EditEventForm = ({ event, onClose, onSubmit, getImageUrl }: Props) => {
+interface FormProps extends Props {
+  categories: ICategory[]
+}
+
+const Form = ({ event, onClose, onSubmit, getImageUrl, categories }: FormProps) => {
   const {
     title,
     description,
@@ -78,7 +84,6 @@ const EditEventForm = ({ event, onClose, onSubmit, getImageUrl }: Props) => {
     categories: prevCategories
   } = event
 
-  const { rows: categories } = useCategories()
   const options = categories.map(category => ({ label: category.name, value: category._id }))
   const initialCategories = prevCategories.map(category => {
     const cat = categories.find(c => c._id === category)
@@ -92,27 +97,20 @@ const EditEventForm = ({ event, onClose, onSubmit, getImageUrl }: Props) => {
     control,
     formState: {
       errors
-    },
-    reset
+    }
   } = useForm<FormValues>({
     resolver: superstructResolver(schema),
     defaultValues: {
       title,
       description,
       start: dayjs(start).format('YYYY-MM-DDTHH:mm'),
-      end: dayjs(end).format('YYYY-MM-DDTHH:mm') ?? '',
+      end: end ? dayjs(end).format('YYYY-MM-DDTHH:mm') : '',
       ticketLink: ticketLink ?? '',
       locationName,
       published,
       categories: initialCategories
     }
   })
-
-  useEffect(() => {
-    if (categories.length > 0) {
-      reset({ categories: initialCategories })
-    }
-  }, [categories])
 
   const submitHandler: SubmitHandler<FormValues> = async (data) => {
     const { flyer, categories: newCategories, ...rest } = data
@@ -221,6 +219,26 @@ const EditEventForm = ({ event, onClose, onSubmit, getImageUrl }: Props) => {
         </Button>
       </VStack>
     </chakra.form>
+  )
+}
+
+const EditEventForm = ({ event, onClose, onSubmit, getImageUrl }: Props) => {
+  const { rows: categories } = useCategories()
+  if (categories.length === 0) {
+    return (
+      <Center w='full' h='full' mb={4}>
+        <Spinner />
+      </Center>
+    )
+  }
+  return (
+    <Form
+      event={event}
+      onClose={onClose}
+      onSubmit={onSubmit}
+      getImageUrl={getImageUrl}
+      categories={categories}
+    />
   )
 }
 

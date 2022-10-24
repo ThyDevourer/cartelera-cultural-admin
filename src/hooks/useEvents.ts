@@ -308,7 +308,7 @@ const useEvents = () => {
 
   const getImageUrl = async (image: FileList) => {
     try {
-      const url = await uploadImage(image, token)
+      const url = await uploadImage(image, token, setToken)
       return url
     } catch (err) {
       if (err instanceof Error) {
