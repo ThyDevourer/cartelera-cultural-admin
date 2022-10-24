@@ -5,7 +5,10 @@ import { APIError } from '../utils/error'
 import { API_URL } from '../utils/constants'
 import { refreshToken } from '../services/auth.service'
 
-export const crud = async <TReq extends {}, TRes>(request: Request<TReq>, tokenUpdater?: (token: string) => void): Promise<Response<TRes>> => {
+export const crud = async <TReq extends {}, TRes>(
+  request: Request<TReq>,
+  tokenUpdater?: (token: string) => void
+): Promise<Response<TRes>> => {
   const { method, meta, payload, endpoint } = request
   const headers: HeadersInit = {}
   if (meta?.token) {
