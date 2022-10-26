@@ -19,8 +19,7 @@ import {
   AlertDialogHeader,
   AlertDialogBody,
   AlertDialogFooter,
-  useDisclosure,
-  useBreakpointValue
+  useDisclosure
 } from '@chakra-ui/react'
 import {
   FaPlus,
@@ -136,13 +135,6 @@ const Categories = () => {
     }
   ]
 
-  const nameColWidth = useBreakpointValue({
-    base: 180,
-    sm: 300,
-    md: 500,
-    lg: 1100
-  })
-
   const columns: ColumnDef<ICategory, any>[] = [
     columnHelper.accessor('name', {
       header: col => (
@@ -154,7 +146,7 @@ const Categories = () => {
         />
       ),
       cell: ({ getValue }) => truncate(getValue(), { length: 35 }),
-      size: nameColWidth
+      size: Number.MAX_SAFE_INTEGER
     }),
     {
       id: 'actions',
