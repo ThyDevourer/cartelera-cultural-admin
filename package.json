@@ -21,7 +21,7 @@
     "@tanstack/react-query": "^4.2.1",
     "@tanstack/react-query-devtools": "^4.2.1",
     "@tanstack/react-table": "^8.5.15",
-    "chakra-react-select": "^4.2.2",
+    "chakra-react-select": "^4.4.0",
     "dayjs": "^1.11.5",
     "framer-motion": "^7.6.1",
     "js-base64": "^3.7.2",
