@@ -1,6 +1,7 @@
 import create from 'zustand'
 import { devtools } from 'zustand/middleware'
 import io, { type Socket } from 'socket.io-client'
+import { API_URL } from '../utils/constants'
 
 type ServerToClientEvents = {
   eventAdded: (eventId: string, userId: string) => void
@@ -19,7 +20,7 @@ interface SocketState {
   close: () => void
 }
 
-const socket = io('http://localhost:3000')
+const socket = io(API_URL)
 
 export const useSocketStore = create<SocketState>()(
   devtools(
