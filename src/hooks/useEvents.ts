@@ -15,6 +15,10 @@ import {
 import { debounce } from 'lodash'
 import { APIError } from '../utils/error'
 import { getImageUrl as uploadImage } from '../utils/func'
+import { useSocketIo } from './useSocketIo'
+import { useUsers } from './useUsers'
+import { useSessionStore } from './useSessionStore'
+import shallow from 'zustand/shallow'
 
 const useEvents = () => {
   const toast = useToast()
@@ -329,6 +333,24 @@ const useEvents = () => {
     }
   }
 
+  const getEvent = async (id: string) => {
+    const cachedEvent = client.getQueryData<Response<IEvent>>(['events', id])
+    if (cachedEvent) {
+      return cachedEvent.data
+    }
+    const { data: event } = await client.fetchQuery(['events', id], async () => {
+      const res = await crud<string, IEvent>({
+        method: 'GET',
+        endpoint: `events/${id}`,
+        meta: {
+          token
+        }
+      })
+      return res
+    })
+    return event
+  }
+
   return {
     status,
     rows,
@@ -351,7 +373,8 @@ const useEvents = () => {
     upperShown,
     sort,
     toggleSort,
-    getImageUrl
+    getImageUrl,
+    getEvent
   }
 }
 
@@ -425,4 +448,48 @@ export const useEvent = (id: string) => {
     togglePublished,
     isLoading
   }
+}
+
+export const useEventSocket = () => {
+  const { addListener, removeListener } = useSocketIo()
+  const { getUser } = useUsers()
+  const client = useQueryClient()
+  const toast = useToast()
+  const { user: currentUser } = useSessionStore(state => ({ user: state.user }), shallow)
+  const { getEvent } = useEvents()
+
+  useEffect(() => {
+    addListener('eventAdded', async (eventId, userId) => {
+      await client.refetchQueries(['events'])
+      const event = await getEvent(eventId)
+      const user = await getUser(userId)
+      if (event && user._id !== currentUser!._id) {
+        toast({
+          title: '¡Nuevo evento!',
+          description: `${user.username} añadió el evento ${event.title}`,
+          status: 'success',
+          duration: 5000,
+          isClosable: true
+        })
+      }
+    })
+    addListener('eventPublished', async (eventId, userId) => {
+      await client.refetchQueries(['events'])
+      const event = await getEvent(eventId)
+      const user = await getUser(userId)
+      if (event && event.published && user._id !== currentUser!._id) {
+        toast({
+          title: '¡Evento publicado!',
+          description: `${user.username} publicó el evento ${event.title}`,
+          status: 'success',
+          duration: 5000,
+          isClosable: true
+        })
+      }
+    })
+    return () => {
+      removeListener('eventAdded')
+      removeListener('eventPublished')
+    }
+  }, [])
 }

@@ -10,6 +10,7 @@ import Sidebar from '../Sidebar/Sidebar'
 import Topbar from '../Topbar/Topbar'
 import Suspense from '../Suspense/Suspense'
 import { useAuth } from '../../hooks/useAuth'
+import { useEventSocket } from '../../hooks/useEvents'
 
 interface Props {
   pages: Page[]
@@ -18,6 +19,7 @@ interface Props {
 const Layout = ({ pages }: Props) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { logout } = useAuth()
+  useEventSocket()
 
   return (
     <Flex

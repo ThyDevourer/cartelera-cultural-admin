@@ -259,6 +259,24 @@ export const useUsers = () => {
     }
   })
 
+  const getUser = async (id: string) => {
+    const cachedUser = client.getQueryData<Response<IUser>>(['users', id])
+    if (cachedUser) {
+      return cachedUser.data
+    }
+    const { data: user } = await client.fetchQuery(['users', id], async () => {
+      const res = await crud<string, IUser>({
+        method: 'GET',
+        endpoint: `users/${id}`,
+        meta: {
+          token
+        }
+      }, setToken)
+      return res
+    })
+    return user
+  }
+
   return {
     status,
     rows,
@@ -280,6 +298,7 @@ export const useUsers = () => {
     upperShown,
     addUser,
     editUser,
-    deleteUser
+    deleteUser,
+    getUser
   }
 }
