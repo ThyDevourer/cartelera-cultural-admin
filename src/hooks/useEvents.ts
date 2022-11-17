@@ -33,13 +33,7 @@ const useEvents = () => {
     start: {
       lower: '',
       upper: ''
-    },
-    end: {
-      lower: '',
-      upper: ''
     }
-    // createdBy: '',
-    // categories: [],
   })
   const filterInputs: FilterShape[] = [
     {
@@ -69,16 +63,6 @@ const useEvents = () => {
     {
       name: 'Y',
       field: 'start.upper',
-      type: 'datetime-local'
-    },
-    {
-      name: 'Termina entre',
-      field: 'end.lower',
-      type: 'datetime-local'
-    },
-    {
-      name: 'Y',
-      field: 'end.upper',
       type: 'datetime-local'
     },
     {
@@ -271,12 +255,6 @@ const useEvents = () => {
         break
       case 'start.upper':
         setFilters(prev => ({ ...prev, start: { ...prev.start, upper: value } }))
-        break
-      case 'end.lower':
-        setFilters(prev => ({ ...prev, end: { ...prev.end, lower: value } }))
-        break
-      case 'end.upper':
-        setFilters(prev => ({ ...prev, end: { ...prev.end, upper: value } }))
         break
       case 'ticketLink':
         setFilters(prev => ({ ...prev, ticketLink: value }))

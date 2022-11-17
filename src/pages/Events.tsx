@@ -163,7 +163,8 @@ const Events = () => {
       cell: info => truncate(info.getValue(), { length: 35 }),
       size: 400
     }),
-    columnHelper.accessor('start', {
+    {
+      id: 'start',
       header: col => (
         <HeaderButton
           onClick={() => toggleSort(col.header.id)}
@@ -172,27 +173,18 @@ const Events = () => {
           column={col.column.id}
         />
       ),
-      cell: info => dayjs(info.getValue()).format('DD / MM / YYYY hh:mm A')
-    }),
-    columnHelper.accessor('end', {
-      header: col => (
-        <HeaderButton
-          onClick={() => toggleSort(col.header.id)}
-          text='Fin'
-          sort={sort}
-          column={col.column.id}
-        />
-      ),
-      cell: ({ getValue }) => {
-        const date = getValue()
-        return date ? dayjs(date).format('DD / MM / YYYY hh:mm A') : null
-      }
-    }),
+      cell: info => dayjs(info.row.original.dates[0].start).format('DD / MM / YYYY hh:mm A')
+    },
+    {
+      id: 'multiDates',
+      header: () => <span>¿Múltiples fechas?</span>,
+      cell: info => info.row.original.dates.length > 1 ? 'Si' : 'No'
+    },
     columnHelper.accessor('published', {
       header: col => (
         <HeaderButton
           onClick={() => toggleSort(col.header.id)}
-          text='Publicado?'
+          text='¿Publicado?'
           sort={sort}
           column={col.column.id}
         />
