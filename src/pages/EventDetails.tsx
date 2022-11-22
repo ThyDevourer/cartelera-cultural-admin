@@ -14,7 +14,8 @@ import {
   TagLabel,
   Icon,
   VStack,
-  Link
+  Link,
+  Divider
 } from '@chakra-ui/react'
 import {
   FaMapMarkedAlt,
@@ -24,7 +25,6 @@ import {
   FaCalendarAlt,
   FaExternalLinkAlt
 } from 'react-icons/fa'
-import { capitalize } from 'lodash'
 import dayjs from 'dayjs'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 import 'dayjs/locale/es-mx'
@@ -32,6 +32,7 @@ import { Title } from 'react-head'
 import DetailsHeader from '../components/DetailsHeader/DetailsHeader'
 import { imageBaseUrl } from '../utils/constants'
 import { IUser } from '../types/interfaces'
+import { Fragment } from 'react'
 
 dayjs.extend(localizedFormat)
 dayjs.locale('es-mx')
@@ -71,8 +72,7 @@ const EventDetails = () => {
   }
 
   const {
-    start: startDate,
-    end: endDate,
+    dates,
     flyer,
     ticketLink,
     createdBy
@@ -132,8 +132,18 @@ const EventDetails = () => {
                 />
               </Center>
               <VStack alignItems='start'>
-                <Text>{capitalize(dayjs(startDate).format('llll'))}{endDate && ' -'}</Text>
-                {endDate && <Text>{capitalize(dayjs(endDate).format('llll'))}</Text>}
+                {dates.map(({ start, end }) => (
+                  <Fragment key={`${start}-${end ?? ''}`}>
+                    <VStack>
+                      <Box>
+                        <Text>
+                          {`${dayjs(start).format('lll')} - ${end ? dayjs(end).format('lll') : ''}`}
+                        </Text>
+                      </Box>
+                      {dates.length > 1 && <Divider />}
+                    </VStack>
+                  </Fragment>
+                ))}
               </VStack>
             </Flex>
             <Flex
@@ -154,7 +164,7 @@ const EventDetails = () => {
                 <Icon
                   as={FaMapMarkedAlt}
                   boxSize={6}
-                />
+                  />
               </Center>
               <Box>
                 {data?.data.locationName}
@@ -185,10 +195,10 @@ const EventDetails = () => {
             src={`${imageBaseUrl}${flyer}`}
             fit='cover'
             borderRadius='xl'
-          />
+            />
         </Center>
       </Flex>
-    </>
+      </>
   )
 }
 
