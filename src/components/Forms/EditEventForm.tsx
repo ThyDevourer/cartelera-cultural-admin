@@ -66,8 +66,7 @@ const schema = object({
     start: nonempty(string()),
     end: optional(refine(string(), 'isAfterStart', (value, { branch }) => {
       if (dayjs(value).isValid()) {
-        console.log(branch)
-        return dayjs(value).isAfter(branch[0].start)
+        return dayjs(value).isAfter(branch[1].start)
       }
       return true
     }))
