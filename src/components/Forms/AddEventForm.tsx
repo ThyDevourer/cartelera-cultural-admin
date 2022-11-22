@@ -1,20 +1,25 @@
-import { useRef } from 'react'
+import { useRef, Fragment } from 'react'
 import {
   FormControl,
   FormLabel,
   Input,
+  InputGroup,
+  InputRightElement,
   Textarea,
   Button,
   VStack,
   Switch,
   chakra,
   HStack,
-  Text
+  Text,
+  IconButton,
+  Flex
 } from '@chakra-ui/react'
 import {
   useForm,
   SubmitHandler,
-  Controller
+  Controller,
+  useFieldArray
 } from 'react-hook-form'
 import { superstructResolver } from '@hookform/resolvers/superstruct'
 import {
@@ -28,7 +33,12 @@ import {
   array
 } from 'superstruct'
 import dayjs from 'dayjs'
-import { FaCloudUploadAlt, FaSave } from 'react-icons/fa'
+import {
+  FaCloudUploadAlt,
+  FaSave,
+  FaTrash,
+  FaPlus
+} from 'react-icons/fa'
 import { truncate } from 'lodash'
 import { Select } from 'chakra-react-select'
 import { AddEventPayload, IEvent } from '../../types/interfaces'
@@ -49,12 +59,15 @@ const schema = object({
   title: nonempty(string()),
   description: nonempty(string()),
   flyer: instance(FileList),
-  start: nonempty(string()),
-  end: optional(refine(string(), 'isAfterStart', (value, { branch }) => {
-    if (dayjs(value).isValid()) {
-      return dayjs(value).isAfter(branch[0].start)
-    }
-    return true
+  dates: array(object({
+    start: nonempty(string()),
+    end: optional(refine(string(), 'isAfterStart', (value, { branch }) => {
+      if (dayjs(value).isValid()) {
+        console.log(branch)
+        return dayjs(value).isAfter(branch[0].start)
+      }
+      return true
+    }))
   })),
   ticketLink: optional(string()),
   locationName: optional(string()),
@@ -75,7 +88,20 @@ const AddEventForm = ({ onClose, onSubmit, getImageUrl }: Props) => {
       errors
     }
   } = useForm<FormValues>({
-    resolver: superstructResolver(schema)
+    resolver: superstructResolver(schema),
+    defaultValues: {
+      dates: [
+        { start: '', end: '' }
+      ]
+    }
+  })
+  const {
+    fields,
+    append,
+    remove
+  } = useFieldArray({
+    control,
+    name: 'dates'
   })
   const { rows: categories } = useCategories()
   const options = categories.map(category => ({ label: category.name, value: category._id }))
@@ -107,18 +133,50 @@ const AddEventForm = ({ onClose, onSubmit, getImageUrl }: Props) => {
           <FormLabel>Descripción</FormLabel>
           <Textarea variant='normal' {...register('description')} />
         </FormControl>
-        <FormControl isInvalid={!!errors.start} isRequired>
-          <FormLabel>Fecha de inicio</FormLabel>
-          <Input variant='normal' type='datetime-local' {...register('start')} />
-        </FormControl>
-        <FormControl isInvalid={!!errors.end}>
-          <FormLabel>Fecha de finalización</FormLabel>
-          <Input
-            variant='normal'
-            type='datetime-local'
-            {...register('end')}
-          />
-        </FormControl>
+        {fields.map((field, index) => (
+          <Fragment key={field.id}>
+            <FormControl>
+              <FormLabel>{`Fecha ${index + 1}`}</FormLabel>
+              <HStack>
+                <VStack w='full'>
+                  <InputGroup>
+                    <Input
+                      variant='normal'
+                      type='datetime-local'
+                      {...register(`dates.${index}.start` as const)}
+                    />
+                    <InputRightElement pr={8}>Inicio</InputRightElement>
+                  </InputGroup>
+                  <InputGroup>
+                    <Input
+                      variant='normal'
+                      type='datetime-local'
+                      {...register(`dates.${index}.end` as const)}
+                      />
+                    <InputRightElement pr={8}>Final</InputRightElement>
+                  </InputGroup>
+                </VStack>
+                {fields.length > 1 && (
+                  <IconButton
+                    variant='alt'
+                    aria-label='Delete date'
+                    icon={<FaTrash />}
+                    onClick={() => remove(index)}
+                    />
+                )}
+              </HStack>
+            </FormControl>
+          </Fragment>
+        ))}
+        <Flex alignItems='center' justifyContent='end' w='full'>
+          <Button
+            variant='alt'
+            onClick={() => append({ start: '', end: '' })}
+            leftIcon={<FaPlus />}
+          >
+            Fecha
+          </Button>
+        </Flex>
         <FormControl isInvalid={!!errors.ticketLink}>
           <FormLabel>Link para comprar boletos</FormLabel>
           <Input variant='normal' type='text' {...register('ticketLink')} />
@@ -146,9 +204,9 @@ const AddEventForm = ({ onClose, onSubmit, getImageUrl }: Props) => {
                 placeholder='Selecciona una o varias categorías'
                 useBasicStyles
                 variant='filled'
-              />
+                />
             )}
-          />
+            />
         </FormControl>
         <FormControl isInvalid={!!errors.flyer} isRequired>
           <FormLabel htmlFor='flyer'>Flyer</FormLabel>
@@ -174,7 +232,7 @@ const AddEventForm = ({ onClose, onSubmit, getImageUrl }: Props) => {
               uploadInputRef(el)
             }}
             {...uploadInputProps}
-          />
+            />
         </FormControl>
         <Button
           alignSelf='end'
