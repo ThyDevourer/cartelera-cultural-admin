@@ -26,8 +26,10 @@ export interface IEvent {
   title: string
   description: string
   flyer: string
-  start: string
-  end?: string
+  dates: {
+    start: string,
+    end?: string
+  }[]
   ticketLink?: string
   locationName?: string
   published: boolean
@@ -98,12 +100,6 @@ export interface EventFilters {
     lower: string
     upper: string
   }
-  end: {
-    lower: string
-    upper: string
-  }
-  // createdBy: string
-  // categories: string[]
 }
 
 export interface CategoryFilters {

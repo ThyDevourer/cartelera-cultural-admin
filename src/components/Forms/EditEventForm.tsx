@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useRef, Fragment } from 'react'
 import {
   FormControl,
   FormLabel,
@@ -11,12 +11,17 @@ import {
   HStack,
   Text,
   Spinner,
-  Center
+  Center,
+  InputGroup,
+  InputRightElement,
+  IconButton,
+  Flex
 } from '@chakra-ui/react'
 import {
   useForm,
   SubmitHandler,
-  Controller
+  Controller,
+  useFieldArray
 } from 'react-hook-form'
 import { superstructResolver } from '@hookform/resolvers/superstruct'
 import {
@@ -31,7 +36,12 @@ import {
 } from 'superstruct'
 import dayjs from 'dayjs'
 import { Select } from 'chakra-react-select'
-import { FaCloudUploadAlt, FaSave } from 'react-icons/fa'
+import {
+  FaCloudUploadAlt,
+  FaSave,
+  FaTrash,
+  FaPlus
+} from 'react-icons/fa'
 import { truncate } from 'lodash'
 import { EditEventPayload, ICategory, IEvent } from '../../types/interfaces'
 import { useCategories } from '../../hooks/useCategories'
@@ -51,13 +61,15 @@ interface Props {
 const schema = object({
   title: nonempty(string()),
   description: nonempty(string()),
-  flyer: optional(instance(FileList)),
-  start: nonempty(string()),
-  end: optional(refine(string(), 'isAfterStart', (value, { branch }) => {
-    if (dayjs(value).isValid()) {
-      return dayjs(value).isAfter(branch[0].start)
-    }
-    return true
+  flyer: instance(FileList),
+  dates: array(object({
+    start: nonempty(string()),
+    end: optional(refine(string(), 'isAfterStart', (value, { branch }) => {
+      if (dayjs(value).isValid()) {
+        return dayjs(value).isAfter(branch[1].start)
+      }
+      return true
+    }))
   })),
   ticketLink: optional(string()),
   locationName: optional(string()),
@@ -76,15 +88,17 @@ const Form = ({ event, onClose, onSubmit, getImageUrl, categories }: FormProps) 
   const {
     title,
     description,
-    start,
-    end,
+    dates,
     ticketLink,
     locationName,
     published,
     categories: prevCategories
   } = event
 
-  const options = categories.map(category => ({ label: category.name, value: category._id }))
+  const options = categories.map(category => ({
+    label: category.name,
+    value: category._id
+  }))
   const initialCategories = prevCategories.map(category => {
     const cat = categories.find(c => c._id === category)
     return { label: cat?.name ?? '', value: cat?._id ?? '' }
@@ -103,13 +117,23 @@ const Form = ({ event, onClose, onSubmit, getImageUrl, categories }: FormProps) 
     defaultValues: {
       title,
       description,
-      start: dayjs(start).format('YYYY-MM-DDTHH:mm'),
-      end: end ? dayjs(end).format('YYYY-MM-DDTHH:mm') : '',
+      dates: dates.map(({ start, end }) => ({
+        start: dayjs(start).format('YYYY-MM-DDTHH:mm'),
+        ...(end && { end: dayjs(end).format('YYYY-MM-DDTHH:mm') })
+      })),
       ticketLink: ticketLink ?? '',
       locationName,
       published,
       categories: initialCategories
     }
+  })
+  const {
+    fields,
+    append,
+    remove
+  } = useFieldArray({
+    control,
+    name: 'dates'
   })
 
   const submitHandler: SubmitHandler<FormValues> = async (data) => {
@@ -140,18 +164,50 @@ const Form = ({ event, onClose, onSubmit, getImageUrl, categories }: FormProps) 
           <FormLabel>Descripción</FormLabel>
           <Textarea variant='normal' {...register('description')} />
         </FormControl>
-        <FormControl isInvalid={!!errors.start} isRequired>
-          <FormLabel>Fecha de inicio</FormLabel>
-          <Input variant='normal' type='datetime-local' {...register('start')} />
-        </FormControl>
-        <FormControl isInvalid={!!errors.end}>
-          <FormLabel>Fecha de finalización</FormLabel>
-          <Input
-            variant='normal'
-            type='datetime-local'
-            {...register('end')}
-          />
-        </FormControl>
+        {fields.map((field, index) => (
+          <Fragment key={field.id}>
+            <FormControl>
+              <FormLabel>{`Fecha ${index + 1}`}</FormLabel>
+              <HStack>
+                <VStack w='full'>
+                  <InputGroup>
+                    <Input
+                      variant='normal'
+                      type='datetime-local'
+                      {...register(`dates.${index}.start`)}
+                    />
+                    <InputRightElement pr={8}>Inicio</InputRightElement>
+                  </InputGroup>
+                  <InputGroup>
+                    <Input
+                      variant='normal'
+                      type='datetime-local'
+                      {...register(`dates.${index}.end` as const)}
+                      />
+                    <InputRightElement pr={8}>Final</InputRightElement>
+                  </InputGroup>
+                </VStack>
+                {fields.length > 1 && (
+                  <IconButton
+                    variant='alt'
+                    aria-label='Delete date'
+                    icon={<FaTrash />}
+                    onClick={() => remove(index)}
+                    />
+                )}
+              </HStack>
+            </FormControl>
+          </Fragment>
+        ))}
+        <Flex alignItems='center' justifyContent='end' w='full'>
+          <Button
+            variant='alt'
+            onClick={() => append({ start: '', end: '' })}
+            leftIcon={<FaPlus />}
+          >
+            Fecha
+          </Button>
+        </Flex>
         <FormControl isInvalid={!!errors.ticketLink}>
           <FormLabel>Link para comprar boletos</FormLabel>
           <Input variant='normal' type='text' {...register('ticketLink')} />
