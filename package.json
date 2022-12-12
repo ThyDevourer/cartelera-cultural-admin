@@ -23,7 +23,7 @@
     "@tanstack/react-table": "^8.5.15",
     "chakra-react-select": "^4.4.0",
     "dayjs": "^1.11.5",
-    "framer-motion": "^7.6.12",
+    "framer-motion": "^7.6.19",
     "js-base64": "^3.7.2",
     "jwt-decode": "^3.1.2",
     "lodash": "^4.17.21",
