@@ -33,7 +33,7 @@
     "react-head": "^3.4.2",
     "react-hook-form": "^7.39.1",
     "react-icons": "^4.4.0",
-    "react-router-dom": "^6.4.3",
+    "react-router-dom": "^6.5.0",
     "socket.io-client": "^4.5.3",
     "superstruct": "^0.16.0",
     "zustand": "^4.1.3"
